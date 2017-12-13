@@ -12,12 +12,13 @@ import com.alibaba.datax.dataxservice.face.domain.enums.State;
 import java.util.List;
 import java.util.Map;
 
+/* 保存一个job的状态 */
 public abstract class AbstractContainerCommunicator {
-    private Configuration configuration;
-    private AbstractCollector collector;
-    private AbstractReporter reporter;
+    private Configuration configuration;    /* 配置 */
+    private AbstractCollector collector;    /* 收集统计信息 */
+    private AbstractReporter reporter;      /* 提交统计信息 */
 
-    private Long jobId;
+    private Long jobId;                     /* 任务id */
 
     private VMInfo vmInfo = VMInfo.getVmInfo();
     private long lastReportTime = System.currentTimeMillis();

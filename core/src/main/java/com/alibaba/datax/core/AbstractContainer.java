@@ -8,9 +8,8 @@ import org.apache.commons.lang.Validate;
  * 执行容器的抽象类，持有该容器全局的配置 configuration
  */
 public abstract class AbstractContainer {
-    protected Configuration configuration;
-
-    protected AbstractContainerCommunicator containerCommunicator;
+    protected Configuration configuration;  /* 配置 */
+    protected AbstractContainerCommunicator containerCommunicator;  /* 处理统计信息 */
 
     public AbstractContainer(Configuration configuration) {
         Validate.notNull(configuration, "Configuration can not be null.");

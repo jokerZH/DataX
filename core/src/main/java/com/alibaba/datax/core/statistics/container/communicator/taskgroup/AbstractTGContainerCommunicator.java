@@ -14,6 +14,8 @@ import java.util.Map;
 /**
  * 该类是用于处理 taskGroupContainer 的 communication 的收集汇报的父类
  * 主要是 taskCommunicationMap 记录了 taskExecutor 的 communication 属性
+ *
+ * 记录jobId和taskGroupId
  */
 public abstract class AbstractTGContainerCommunicator extends AbstractContainerCommunicator {
 
@@ -29,11 +31,9 @@ public abstract class AbstractTGContainerCommunicator extends AbstractContainerC
 
     public AbstractTGContainerCommunicator(Configuration configuration) {
         super(configuration);
-        this.jobId = configuration.getInt(
-                CoreConstant.DATAX_CORE_CONTAINER_JOB_ID);
+        this.jobId = configuration.getInt(CoreConstant.DATAX_CORE_CONTAINER_JOB_ID);
         super.setCollector(new ProcessInnerCollector(this.jobId));
-        this.taskGroupId = configuration.getInt(
-                CoreConstant.DATAX_CORE_CONTAINER_TASKGROUP_ID);
+        this.taskGroupId = configuration.getInt(CoreConstant.DATAX_CORE_CONTAINER_TASKGROUP_ID);
     }
 
     @Override

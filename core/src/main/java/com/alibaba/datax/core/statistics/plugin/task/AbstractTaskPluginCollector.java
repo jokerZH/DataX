@@ -14,19 +14,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Created by jingxing on 14-9-11.
+ * 记录单个task处理失败的数据统计信息
  */
 public abstract class AbstractTaskPluginCollector extends TaskPluginCollector {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(AbstractTaskPluginCollector.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskPluginCollector.class);
 
     private Communication communication;
-
     private Configuration configuration;
-
     private PluginType pluginType;
 
-    public AbstractTaskPluginCollector(Configuration conf, Communication communication,
-                                       PluginType type) {
+    public AbstractTaskPluginCollector(Configuration conf, Communication communication, PluginType type) {
         this.configuration = conf;
         this.communication = communication;
         this.pluginType = type;
@@ -50,28 +47,22 @@ public abstract class AbstractTaskPluginCollector extends TaskPluginCollector {
     }
 
     @Override
-    public void collectDirtyRecord(Record dirtyRecord, Throwable t,
-                                   String errorMessage) {
-
+    public void collectDirtyRecord(Record dirtyRecord, Throwable t, String errorMessage) {
         if (null == dirtyRecord) {
             LOG.warn("脏数据record=null.");
             return;
         }
 
         if (this.pluginType.equals(PluginType.READER)) {
-            this.communication.increaseCounter(
-                    CommunicationTool.READ_FAILED_RECORDS, 1);
-            this.communication.increaseCounter(
-                    CommunicationTool.READ_FAILED_BYTES, dirtyRecord.getByteSize());
+            this.communication.increaseCounter(CommunicationTool.READ_FAILED_RECORDS, 1);
+            this.communication.increaseCounter(CommunicationTool.READ_FAILED_BYTES, dirtyRecord.getByteSize());
+
         } else if (this.pluginType.equals(PluginType.WRITER)) {
-            this.communication.increaseCounter(
-                    CommunicationTool.WRITE_FAILED_RECORDS, 1);
-            this.communication.increaseCounter(
-                    CommunicationTool.WRITE_FAILED_BYTES, dirtyRecord.getByteSize());
+            this.communication.increaseCounter(CommunicationTool.WRITE_FAILED_RECORDS, 1);
+            this.communication.increaseCounter(CommunicationTool.WRITE_FAILED_BYTES, dirtyRecord.getByteSize());
+
         } else {
-            throw DataXException.asDataXException(
-                    FrameworkErrorCode.RUNTIME_ERROR,
-                    String.format("不知道的插件类型[%s].", this.pluginType));
+            throw DataXException.asDataXException( FrameworkErrorCode.RUNTIME_ERROR, String.format("不知道的插件类型[%s].", this.pluginType));
         }
     }
 }

@@ -10,8 +10,6 @@ import com.alibaba.datax.common.plugin.RecordSender;
 
 /**
  * 每个Reader插件在其内部内部实现Job、Task两个内部类。
- * 
- * 
  * */
 public abstract class Reader extends BaseObject {
 

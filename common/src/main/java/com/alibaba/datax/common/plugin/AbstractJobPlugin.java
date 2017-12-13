@@ -12,14 +12,11 @@ public abstract class AbstractJobPlugin extends AbstractPlugin {
 	}
 
 	/**
-	 * @param jobPluginCollector
-	 *            the jobPluginCollector to set
+	 * @param jobPluginCollector the jobPluginCollector to set
 	 */
-	public void setJobPluginCollector(
-            JobPluginCollector jobPluginCollector) {
+	public void setJobPluginCollector(JobPluginCollector jobPluginCollector) {
 		this.jobPluginCollector = jobPluginCollector;
 	}
 
 	private JobPluginCollector jobPluginCollector;
-
 }

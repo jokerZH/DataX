@@ -56,10 +56,9 @@ public class Configuration {
      * 对于加密的keyPath，需要记录下来
      * 为的是后面分布式情况下将该值加密后抛到DataXServer中
      */
-    private Set<String> secretKeyPathSet =
-            new HashSet<String>();
+    private Set<String> secretKeyPathSet = new HashSet<String>();
 
-	private Object root = null;
+	private Object root = null;	/* json对象 */
 
 	/**
 	 * 初始化空白的Configuration
@@ -78,8 +77,7 @@ public class Configuration {
 		try {
 			return new Configuration(json);
 		} catch (Exception e) {
-			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR,
-					e);
+			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR, e);
 		}
 
 	}
@@ -89,16 +87,11 @@ public class Configuration {
 	 */
 	public static Configuration from(File file) {
 		try {
-			return Configuration.from(IOUtils
-					.toString(new FileInputStream(file)));
+			return Configuration.from(IOUtils.toString(new FileInputStream(file)));
 		} catch (FileNotFoundException e) {
-			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR,
-					String.format("配置信息错误，您提供的配置文件[%s]不存在. 请检查您的配置文件.", file.getAbsolutePath()));
+			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR, String.format("配置信息错误，您提供的配置文件[%s]不存在. 请检查您的配置文件.", file.getAbsolutePath()));
 		} catch (IOException e) {
-			throw DataXException.asDataXException(
-					CommonErrorCode.CONFIG_ERROR,
-					String.format("配置信息错误. 您提供配置文件[%s]读取失败，错误原因: %s. 请检查您的配置文件的权限设置.",
-							file.getAbsolutePath(), e));
+			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR, String.format("配置信息错误. 您提供配置文件[%s]读取失败，错误原因: %s. 请检查您的配置文件的权限设置.", file.getAbsolutePath(), e));
 		}
 	}
 
@@ -109,8 +102,7 @@ public class Configuration {
 		try {
 			return Configuration.from(IOUtils.toString(is));
 		} catch (IOException e) {
-			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR,
-					String.format("请检查您的配置文件. 您提供的配置文件读取失败，错误原因: %s. 请检查您的配置文件的权限设置.", e));
+			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR, String.format("请检查您的配置文件. 您提供的配置文件读取失败，错误原因: %s. 请检查您的配置文件的权限设置.", e));
 		}
 	}
 
@@ -131,8 +123,7 @@ public class Configuration {
 	public String getNecessaryValue(String key, ErrorCode errorCode) {
 		String value = this.getString(key, null);
 		if (StringUtils.isBlank(value)) {
-			throw DataXException.asDataXException(errorCode,
-					String.format("您提供配置文件有误，[%s]是必填参数，不允许为空或者留白 .", key));
+			throw DataXException.asDataXException(errorCode, String.format("您提供配置文件有误，[%s]是必填参数，不允许为空或者留白 .", key));
 		}
 
 		return value;
@@ -937,6 +928,7 @@ public class Configuration {
 				"该异常代表系统编程错误, 请联系DataX开发团队 !");
 	}
 
+	/* 以.分割，然后[xx]表示json object的key, 1223表示array的下标，一直往下爬 */
 	private Object findObject(final String path) {
 		boolean isRootQuery = StringUtils.isBlank(path);
 		if (isRootQuery) {
@@ -962,15 +954,12 @@ public class Configuration {
 	private Object findObjectInMap(final Object target, final String index) {
 		boolean isMap = (target instanceof Map);
 		if (!isMap) {
-			throw new IllegalArgumentException(String.format(
-					"您提供的配置文件有误. 路径[%s]需要配置Json格式的Map对象，但该节点发现实际类型是[%s]. 请检查您的配置并作出修改.",
-					index, target.getClass().toString()));
+			throw new IllegalArgumentException(String.format( "您提供的配置文件有误. 路径[%s]需要配置Json格式的Map对象，但该节点发现实际类型是[%s]. 请检查您的配置并作出修改.", index, target.getClass().toString()));
 		}
 
 		Object result = ((Map<String, Object>) target).get(index);
 		if (null == result) {
-			throw new IllegalArgumentException(String.format(
-					"您提供的配置文件有误. 路径[%s]值为null，datax无法识别该配置. 请检查您的配置并作出修改.", index));
+			throw new IllegalArgumentException(String.format("您提供的配置文件有误. 路径[%s]值为null，datax无法识别该配置. 请检查您的配置并作出修改.", index));
 		}
 
 		return result;
@@ -980,17 +969,13 @@ public class Configuration {
 	private Object findObjectInList(final Object target, final String each) {
 		boolean isList = (target instanceof List);
 		if (!isList) {
-			throw new IllegalArgumentException(String.format(
-					"您提供的配置文件有误. 路径[%s]需要配置Json格式的Map对象，但该节点发现实际类型是[%s]. 请检查您的配置并作出修改.",
+			throw new IllegalArgumentException(String.format("您提供的配置文件有误. 路径[%s]需要配置Json格式的Map对象，但该节点发现实际类型是[%s]. 请检查您的配置并作出修改.",
 					each, target.getClass().toString()));
 		}
 
 		String index = each.replace("[", "").replace("]", "");
 		if (!StringUtils.isNumeric(index)) {
-			throw new IllegalArgumentException(
-					String.format(
-							"系统编程错误，列表下标必须为数字类型，但该节点发现实际类型是[%s] ，该异常代表系统编程错误, 请联系DataX开发团队 !",
-							index));
+			throw new IllegalArgumentException( String.format( "系统编程错误，列表下标必须为数字类型，但该节点发现实际类型是[%s] ，该异常代表系统编程错误, 请联系DataX开发团队 !", index));
 		}
 
 		return ((List<Object>) target).get(Integer.valueOf(index));
@@ -1034,14 +1019,12 @@ public class Configuration {
 
 	private void checkPath(final String path) {
 		if (null == path) {
-			throw new IllegalArgumentException(
-					"系统编程错误, 该异常代表系统编程错误, 请联系DataX开发团队!.");
+			throw new IllegalArgumentException("系统编程错误, 该异常代表系统编程错误, 请联系DataX开发团队!.");
 		}
 
 		for (final String each : StringUtils.split(".")) {
 			if (StringUtils.isBlank(each)) {
-				throw new IllegalArgumentException(String.format(
-						"系统编程错误, 路径[%s]不合法, 路径层次之间不能出现空白字符 .", path));
+				throw new IllegalArgumentException(String.format("系统编程错误, 路径[%s]不合法, 路径层次之间不能出现空白字符 .", path));
 			}
 		}
 	}
@@ -1054,8 +1037,7 @@ public class Configuration {
 
 	private static void checkJSON(final String json) {
 		if (StringUtils.isBlank(json)) {
-			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR,
-					"配置信息错误. 因为您提供的配置信息不是合法的JSON格式, JSON不能为空白. 请按照标准json格式提供配置信息. ");
+			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR, "配置信息错误. 因为您提供的配置信息不是合法的JSON格式, JSON不能为空白. 请按照标准json格式提供配置信息. ");
 		}
 	}
 
@@ -1063,8 +1045,7 @@ public class Configuration {
 		try {
 			this.root = JSON.parse(json);
 		} catch (Exception e) {
-			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR,
-					String.format("配置信息错误. 您提供的配置信息不是合法的JSON格式: %s . 请按照标准json格式提供配置信息. ", e.getMessage()));
+			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR, String.format("配置信息错误. 您提供的配置信息不是合法的JSON格式: %s . 请按照标准json格式提供配置信息. ", e.getMessage()));
 		}
 	}
 

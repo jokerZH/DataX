@@ -58,8 +58,7 @@ public abstract class AbstractRunner {
         this.runnerCommunication.setState(state);
         if (state == State.SUCCEEDED) {
             // 对 stage + 1
-            this.runnerCommunication.setLongCounter(CommunicationTool.STAGE,
-                    this.runnerCommunication.getLongCounter(CommunicationTool.STAGE) + 1);
+            this.runnerCommunication.setLongCounter(CommunicationTool.STAGE, this.runnerCommunication.getLongCounter(CommunicationTool.STAGE) + 1);
         }
     }
 
@@ -85,9 +84,7 @@ public abstract class AbstractRunner {
         this.plugin.setTaskGroupId(taskGroupId);
     }
 
-    /**
-     * @return the taskGroupId
-     */
+    /* @return the taskGroupId */
     public int getTaskGroupId() {
         return taskGroupId;
     }
@@ -102,8 +99,7 @@ public abstract class AbstractRunner {
     }
 
     public void setRunnerCommunication(final Communication runnerCommunication) {
-        Validate.notNull(runnerCommunication,
-                "插件的Communication不能为空");
+        Validate.notNull(runnerCommunication, "插件的Communication不能为空");
         this.runnerCommunication = runnerCommunication;
     }
 

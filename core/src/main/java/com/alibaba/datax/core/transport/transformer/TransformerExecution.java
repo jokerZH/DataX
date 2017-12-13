@@ -32,7 +32,6 @@ public class TransformerExecution {
     /**
      * 参数采取延迟检查
      */
-
     private boolean isChecked = false;
 
     public void genFinalParas() {
@@ -46,6 +45,7 @@ public class TransformerExecution {
             finalParas[1] = transformerExecutionParas.getExtraPackage();
             return;
         }
+
         /**
          * 其他function，按照columnIndex和para的顺序，如果columnIndex为空，跳过conlumnIndex
          */

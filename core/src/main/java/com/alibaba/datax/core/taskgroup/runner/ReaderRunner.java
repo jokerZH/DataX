@@ -8,16 +8,11 @@ import com.alibaba.datax.core.statistics.communication.CommunicationTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by jingxing on 14-9-1.
- * <p/>
- * 单个slice的reader执行调用
- */
+/* 单个slice的reader执行调用 */
 public class ReaderRunner extends AbstractRunner implements Runnable {
+    private static final Logger LOG = LoggerFactory.getLogger(ReaderRunner.class);
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(ReaderRunner.class);
-
+    /* 负责传输数据 */
     private RecordSender recordSender;
 
     public void setRecordSender(RecordSender recordSender) {

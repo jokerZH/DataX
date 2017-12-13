@@ -16,11 +16,9 @@ public final class ClassUtil {
 	 * 
 	 * */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> T instantiate(String className, Class<T> t,
-			Object... args) {
+	public static <T> T instantiate(String className, Class<T> t, Object... args) {
 		try {
-			Constructor constructor = (Constructor) Class.forName(className)
-					.getConstructor(ClassUtil.toClassType(args));
+			Constructor constructor = (Constructor) Class.forName(className).getConstructor(ClassUtil.toClassType(args));
 			return (T) constructor.newInstance(args);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
@@ -36,5 +34,4 @@ public final class ClassUtil {
 
 		return clazzs;
 	}
-
 }

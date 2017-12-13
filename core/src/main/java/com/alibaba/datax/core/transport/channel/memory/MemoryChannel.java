@@ -15,12 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * 内存Channel的具体实现，底层其实是一个ArrayBlockingQueue
- *
- */
+/* 内存Channel的具体实现，底层其实是一个ArrayBlockingQueue */
 public class MemoryChannel extends Channel {
-
 	private int bufferSize = 0;
 
 	private AtomicInteger memoryBytes = new AtomicInteger(0);

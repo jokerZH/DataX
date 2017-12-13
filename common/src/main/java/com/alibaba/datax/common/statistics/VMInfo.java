@@ -14,6 +14,7 @@ import java.util.Map;
 
 /**
  * Created by liqiang on 15/11/12.
+ * 收集jvm信息
  */
 public class VMInfo {
     private static final Logger LOG = LoggerFactory.getLogger(VMInfo.class);

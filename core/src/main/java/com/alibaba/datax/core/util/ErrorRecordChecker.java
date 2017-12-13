@@ -16,15 +16,13 @@ import org.slf4j.LoggerFactory;
  * 3. errorRecord优先级高于errorPercentage。
  */
 public final class ErrorRecordChecker {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(ErrorRecordChecker.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ErrorRecordChecker.class);
 
     private Long recordLimit;
     private Double percentageLimit;
 
     public ErrorRecordChecker(Configuration configuration) {
-        this(configuration.getLong(CoreConstant.DATAX_JOB_SETTING_ERRORLIMIT_RECORD),
-                configuration.getDouble(CoreConstant.DATAX_JOB_SETTING_ERRORLIMIT_PERCENT));
+        this(configuration.getLong(CoreConstant.DATAX_JOB_SETTING_ERRORLIMIT_RECORD), configuration.getDouble(CoreConstant.DATAX_JOB_SETTING_ERRORLIMIT_PERCENT));
     }
 
     public ErrorRecordChecker(Long rec, Double percentage) {
@@ -32,14 +30,11 @@ public final class ErrorRecordChecker {
         percentageLimit = percentage;
 
         if (percentageLimit != null) {
-            Validate.isTrue(0.0 <= percentageLimit && percentageLimit <= 1.0,
-                    "脏数据百分比限制应该在[0.0, 1.0]之间");
+            Validate.isTrue(0.0 <= percentageLimit && percentageLimit <= 1.0,"脏数据百分比限制应该在[0.0, 1.0]之间");
         }
 
         if (recordLimit != null) {
-            Validate.isTrue(recordLimit >= 0,
-                    "脏数据条数现在应该为非负整数");
-
+            Validate.isTrue(recordLimit >= 0,"脏数据条数现在应该为非负整数");
             // errorRecord优先级高于errorPercentage.
             percentageLimit = null;
         }
@@ -52,13 +47,8 @@ public final class ErrorRecordChecker {
 
         long errorNumber = CommunicationTool.getTotalErrorRecords(communication);
         if (recordLimit < errorNumber) {
-            LOG.debug(
-                    String.format("Error-limit set to %d, error count check.",
-                            recordLimit));
-            throw DataXException.asDataXException(
-                    FrameworkErrorCode.PLUGIN_DIRTY_DATA_LIMIT_EXCEED,
-                    String.format("脏数据条数检查不通过，限制是[%d]条，但实际上捕获了[%d]条.",
-                            recordLimit, errorNumber));
+            LOG.debug( String.format("Error-limit set to %d, error count check.", recordLimit));
+            throw DataXException.asDataXException( FrameworkErrorCode.PLUGIN_DIRTY_DATA_LIMIT_EXCEED, String.format("脏数据条数检查不通过，限制是[%d]条，但实际上捕获了[%d]条.", recordLimit, errorNumber));
         }
     }
 
@@ -66,17 +56,13 @@ public final class ErrorRecordChecker {
         if (percentageLimit == null) {
             return;
         }
-        LOG.debug(String.format(
-                "Error-limit set to %f, error percent check.", percentageLimit));
+        LOG.debug(String.format("Error-limit set to %f, error percent check.", percentageLimit));
 
         long total = CommunicationTool.getTotalReadRecords(communication);
         long error = CommunicationTool.getTotalErrorRecords(communication);
 
         if (total > 0 && ((double) error / (double) total) > percentageLimit) {
-            throw DataXException.asDataXException(
-                    FrameworkErrorCode.PLUGIN_DIRTY_DATA_LIMIT_EXCEED,
-                    String.format("脏数据百分比检查不通过，限制是[%f]，但实际上捕获到[%f].",
-                            percentageLimit, ((double) error / (double) total)));
+            throw DataXException.asDataXException( FrameworkErrorCode.PLUGIN_DIRTY_DATA_LIMIT_EXCEED, String.format("脏数据百分比检查不通过，限制是[%f]，但实际上捕获到[%f].", percentageLimit, ((double) error / (double) total)));
         }
     }
 }

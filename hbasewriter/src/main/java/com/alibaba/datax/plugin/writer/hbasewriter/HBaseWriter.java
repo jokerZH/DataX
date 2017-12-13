@@ -196,8 +196,7 @@ public class HBaseWriter extends Writer {
             	
             	while((record = lineReceiver.getFromReader()) != null) {
                 	if(hbaseColumnsList.size() != record.getColumnNumber()) {
-                		throw DataXException.asDataXException(ILLEGAL_VALUES_ERROR, ILLEGAL_VALUES_ERROR.getDescription() +
-                				"读出字段个数:" + record.getColumnNumber() + " " + "配置字段个数:" + hbaseColumnsList.size());
+                		throw DataXException.asDataXException(ILLEGAL_VALUES_ERROR, ILLEGAL_VALUES_ERROR.getDescription() + "读出字段个数:" + record.getColumnNumber() + " " + "配置字段个数:" + hbaseColumnsList.size());
                 	}
                 	
                 	String rowKey = record.getColumn(this.rowkeyIndex).asString();

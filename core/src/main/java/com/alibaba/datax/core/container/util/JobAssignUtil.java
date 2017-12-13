@@ -9,8 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 
 public final class JobAssignUtil {
-    private JobAssignUtil() {
-    }
+    private JobAssignUtil() { }
 
     /**
      * 公平的分配 task 到对应的 taskGroup 中。

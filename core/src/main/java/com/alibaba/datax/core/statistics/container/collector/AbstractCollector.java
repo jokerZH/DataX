@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/* 存储各个task的状态 */
 public abstract class AbstractCollector {
     private Map<Integer, Communication> taskCommunicationMap = new ConcurrentHashMap<Integer, Communication>();
-    private Long jobId;
+    private Long jobId;     /* jobId */
 
     public Map<Integer, Communication> getTaskCommunicationMap() {
         return taskCommunicationMap;
@@ -27,8 +28,7 @@ public abstract class AbstractCollector {
 
     public void registerTGCommunication(List<Configuration> taskGroupConfigurationList) {
         for (Configuration config : taskGroupConfigurationList) {
-            int taskGroupId = config.getInt(
-                    CoreConstant.DATAX_CORE_CONTAINER_TASKGROUP_ID);
+            int taskGroupId = config.getInt(CoreConstant.DATAX_CORE_CONTAINER_TASKGROUP_ID);
             LocalTGCommunicationManager.registerTaskGroupCommunication(taskGroupId, new Communication());
         }
     }

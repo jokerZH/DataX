@@ -50,8 +50,7 @@ public final class CommunicationTool {
     public static final String TRANSFORMER_NAME_PREFIX = "usedTimeByTransformer_";
 
     public static Communication getReportCommunication(Communication now, Communication old, int totalStage) {
-        Validate.isTrue(now != null && old != null,
-                "为汇报准备的新旧metric不能为null");
+        Validate.isTrue(now != null && old != null,"为汇报准备的新旧metric不能为null");
 
         long totalReadRecords = getTotalReadRecords(now);
         long totalReadBytes = getTotalReadBytes(now);
@@ -64,10 +63,8 @@ public final class CommunicationTool {
 
         long timeInterval = now.getTimestamp() - old.getTimestamp();
         long sec = timeInterval <= 1000 ? 1 : timeInterval / 1000;
-        long bytesSpeed = (totalReadBytes
-                - getTotalReadBytes(old)) / sec;
-        long recordsSpeed = (totalReadRecords
-                - getTotalReadRecords(old)) / sec;
+        long bytesSpeed = (totalReadBytes - getTotalReadBytes(old)) / sec;
+        long recordsSpeed = (totalReadRecords - getTotalReadRecords(old)) / sec;
 
         now.setLongCounter(BYTE_SPEED, bytesSpeed < 0 ? 0 : bytesSpeed);
         now.setLongCounter(RECORD_SPEED, recordsSpeed < 0 ? 0 : recordsSpeed);
@@ -81,8 +78,7 @@ public final class CommunicationTool {
     }
 
     public static long getTotalReadRecords(final Communication communication) {
-        return communication.getLongCounter(READ_SUCCEED_RECORDS) +
-                communication.getLongCounter(READ_FAILED_RECORDS);
+        return communication.getLongCounter(READ_SUCCEED_RECORDS) + communication.getLongCounter(READ_FAILED_RECORDS);
     }
 
     public static long getTotalReadBytes(final Communication communication) {
@@ -91,8 +87,7 @@ public final class CommunicationTool {
     }
 
     public static long getTotalErrorRecords(final Communication communication) {
-        return communication.getLongCounter(READ_FAILED_RECORDS) +
-                communication.getLongCounter(WRITE_FAILED_RECORDS);
+        return communication.getLongCounter(READ_FAILED_RECORDS) + communication.getLongCounter(WRITE_FAILED_RECORDS);
     }
 
     public static long getTotalErrorBytes(final Communication communication) {

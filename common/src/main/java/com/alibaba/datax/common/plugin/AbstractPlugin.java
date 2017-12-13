@@ -3,6 +3,7 @@ package com.alibaba.datax.common.plugin;
 import com.alibaba.datax.common.base.BaseObject;
 import com.alibaba.datax.common.util.Configuration;
 
+/* 插件的配置 TODO */
 public abstract class AbstractPlugin extends BaseObject implements Pluginable {
 	//作业的config
     private Configuration pluginJobConf;
@@ -10,7 +11,7 @@ public abstract class AbstractPlugin extends BaseObject implements Pluginable {
     //插件本身的plugin
 	private Configuration pluginConf;
 
-    // by qiangsi.lq。 修改为对端的作业configuration
+    // 修改为对端的作业configuration
     private Configuration peerPluginJobConf;
 
     private String peerPluginName;

@@ -17,11 +17,9 @@ import java.util.Map;
  */
 
 public class DefaultRecord implements Record {
-
 	private static final int RECORD_AVERGAE_COLUMN_NUMBER = 16;
 
-	private List<Column> columns;
-
+	private List<Column> columns;	// 一行记录
 	private int byteSize;
 
 	// 首先是Record本身需要的内存
@@ -48,8 +46,7 @@ public class DefaultRecord implements Record {
 	@Override
 	public void setColumn(int i, final Column column) {
 		if (i < 0) {
-			throw DataXException.asDataXException(FrameworkErrorCode.ARGUMENT_ERROR,
-					"不能给index小于0的column设置值");
+			throw DataXException.asDataXException(FrameworkErrorCode.ARGUMENT_ERROR, "不能给index小于0的column设置值");
 		}
 
 		if (i >= columns.size()) {

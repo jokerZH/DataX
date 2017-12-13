@@ -26,7 +26,6 @@ import java.util.ServiceLoader;
  * 加载里头的jar，使用ServiceLoader机制调用。
  */
 public class HookInvoker {
-
     private static final Logger LOG = LoggerFactory.getLogger(HookInvoker.class);
     private final Map<String, Number> msg;
     private final Configuration conf;
@@ -59,9 +58,9 @@ public class HookInvoker {
         for (String subDir : subDirs) {
             doInvoke(new File(baseDir, subDir).getAbsolutePath());
         }
-
     }
 
+    /* 调用path中jar包的Hook函数 */
     private void doInvoke(String path) {
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         try {
@@ -77,15 +76,13 @@ public class HookInvoker {
             }
         } catch (Exception e) {
             LOG.error("Exception when invoke hook", e);
-            throw DataXException.asDataXException(
-                    CommonErrorCode.HOOK_INTERNAL_ERROR, "Exception when invoke hook", e);
+            throw DataXException.asDataXException(CommonErrorCode.HOOK_INTERNAL_ERROR, "Exception when invoke hook", e);
         } finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     }
 
     public static void main(String[] args) {
-        new HookInvoker("/Users/xiafei/workspace/datax3/target/datax/datax/hook",
-                null, new HashMap<String, Number>()).invokeAll();
+        new HookInvoker("/Users/xiafei/workspace/datax3/target/datax/datax/hook",null, new HashMap<String, Number>()).invokeAll();
     }
 }

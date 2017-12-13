@@ -9,9 +9,9 @@ import java.util.Date;
 /**
  * Created by jingxing on 14-8-24.
  * <p/>
+ * 表示一个字段数据
  */
 public abstract class Column {
-
 	private Type type;
 
 	private Object rawData;

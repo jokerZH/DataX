@@ -26,6 +26,7 @@ public interface RecordSender {
 
 	public void flush();
 
+	/* 发送端结束读取 */
 	public void terminate();
 
 	public void shutdown();

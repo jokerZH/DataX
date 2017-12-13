@@ -17,26 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/* 赞一下，然后放入channel发送 */
 public class BufferedRecordExchanger implements RecordSender, RecordReceiver {
+	private final Channel channel;				/* 数据通道 */
+	private final Configuration configuration;	/* 配置 */
 
-	private final Channel channel;
-
-	private final Configuration configuration;
-
-	private final List<Record> buffer;
-
+	private final List<Record> buffer;			/* TODO */
 	private int bufferSize ;
-
 	protected final int byteCapacity;
-
 	private final AtomicInteger memoryBytes = new AtomicInteger(0);
-
 	private int bufferIndex = 0;
 
-	private static Class<? extends Record> RECORD_CLASS;
-
+	private static Class<? extends Record> RECORD_CLASS;	/* 存储一行记录的对象 */
 	private volatile boolean shutdown = false;
-
 	private final TaskPluginCollector pluginCollector;
 
 	@SuppressWarnings("unchecked")
@@ -48,22 +41,16 @@ public class BufferedRecordExchanger implements RecordSender, RecordReceiver {
 		this.pluginCollector = pluginCollector;
 		this.configuration = channel.getConfiguration();
 
-		this.bufferSize = configuration
-				.getInt(CoreConstant.DATAX_CORE_TRANSPORT_EXCHANGER_BUFFERSIZE);
+		this.bufferSize = configuration.getInt(CoreConstant.DATAX_CORE_TRANSPORT_EXCHANGER_BUFFERSIZE);
 		this.buffer = new ArrayList<Record>(bufferSize);
 
 		//channel的queue默认大小为8M，原来为64M
-		this.byteCapacity = configuration.getInt(
-				CoreConstant.DATAX_CORE_TRANSPORT_CHANNEL_CAPACITY_BYTE, 8 * 1024 * 1024);
+		this.byteCapacity = configuration.getInt(CoreConstant.DATAX_CORE_TRANSPORT_CHANNEL_CAPACITY_BYTE, 8 * 1024 * 1024);
 
 		try {
-			BufferedRecordExchanger.RECORD_CLASS = ((Class<? extends Record>) Class
-					.forName(configuration.getString(
-                            CoreConstant.DATAX_CORE_TRANSPORT_RECORD_CLASS,
-                            "com.alibaba.datax.core.transport.record.DefaultRecord")));
+			BufferedRecordExchanger.RECORD_CLASS = ((Class<? extends Record>) Class.forName(configuration.getString(CoreConstant.DATAX_CORE_TRANSPORT_RECORD_CLASS, "com.alibaba.datax.core.transport.record.DefaultRecord")));
 		} catch (Exception e) {
-			throw DataXException.asDataXException(
-					FrameworkErrorCode.CONFIG_ERROR, e);
+			throw DataXException.asDataXException(FrameworkErrorCode.CONFIG_ERROR, e);
 		}
 	}
 
@@ -72,8 +59,7 @@ public class BufferedRecordExchanger implements RecordSender, RecordReceiver {
 		try {
 			return BufferedRecordExchanger.RECORD_CLASS.newInstance();
 		} catch (Exception e) {
-			throw DataXException.asDataXException(
-					FrameworkErrorCode.CONFIG_ERROR, e);
+			throw DataXException.asDataXException(FrameworkErrorCode.CONFIG_ERROR, e);
 		}
 	}
 
@@ -125,6 +111,7 @@ public class BufferedRecordExchanger implements RecordSender, RecordReceiver {
 		if(shutdown){
 			throw DataXException.asDataXException(CommonErrorCode.SHUT_DOWN_TASK, "");
 		}
+
 		boolean isEmpty = (this.bufferIndex >= this.buffer.size());
 		if (isEmpty) {
 			receive();

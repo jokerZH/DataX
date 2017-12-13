@@ -5,8 +5,8 @@ import com.alibaba.datax.core.taskgroup.TaskGroupContainer;
 import com.alibaba.datax.core.util.FrameworkErrorCode;
 import com.alibaba.datax.dataxservice.face.domain.enums.State;
 
+/* 负责运行一个task */
 public class TaskGroupContainerRunner implements Runnable {
-
 	private TaskGroupContainer taskGroupContainer;
 
 	private State state;
@@ -19,14 +19,12 @@ public class TaskGroupContainerRunner implements Runnable {
 	@Override
 	public void run() {
 		try {
-            Thread.currentThread().setName(
-                    String.format("taskGroup-%d", this.taskGroupContainer.getTaskGroupId()));
+            Thread.currentThread().setName(String.format("taskGroup-%d", this.taskGroupContainer.getTaskGroupId()));
             this.taskGroupContainer.start();
 			this.state = State.SUCCEEDED;
 		} catch (Throwable e) {
 			this.state = State.FAILED;
-			throw DataXException.asDataXException(
-					FrameworkErrorCode.RUNTIME_ERROR, e);
+			throw DataXException.asDataXException(FrameworkErrorCode.RUNTIME_ERROR, e);
 		}
 	}
 

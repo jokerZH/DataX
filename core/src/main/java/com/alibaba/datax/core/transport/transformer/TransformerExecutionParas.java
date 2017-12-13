@@ -4,15 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * no comments.
  * Created by liqiang on 16/3/16.
+ * function参数
  */
 public class TransformerExecutionParas {
-
-    /**
-     * 以下是function参数
-     */
-
     private Integer columnIndex;
     private String[] paras;
     private Map<String, Object> tContext;

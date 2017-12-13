@@ -44,8 +44,7 @@ import java.util.List;
  * 但它并不做实际的数据同步操作
  */
 public class JobContainer extends AbstractContainer {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(JobContainer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JobContainer.class);
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");

@@ -15,9 +15,7 @@ import org.slf4j.LoggerFactory;
  * 单个slice的writer执行调用
  */
 public class WriterRunner extends AbstractRunner implements Runnable {
-
-    private static final Logger LOG = LoggerFactory
-            .getLogger(WriterRunner.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WriterRunner.class);
 
     private RecordReceiver recordReceiver;
 

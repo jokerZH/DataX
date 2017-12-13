@@ -12,10 +12,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by liqiang on 15/7/23.
+ *  统计一个task的数据处理情况，如当前读取多少数据，写入多少数据
  */
 public class TaskMonitor {
-
     private static final Logger LOG = LoggerFactory.getLogger(TaskMonitor.class);
+
     private static final TaskMonitor instance = new TaskMonitor();
     private static long EXPIRED_TIME = 172800 * 1000;
 
@@ -45,6 +46,7 @@ public class TaskMonitor {
         if (communication.isFinished()) {
             return;
         }
+
         if (!tasks.containsKey(taskid)) {
             LOG.warn("unexpected: taskid({}) missed.", taskid);
             tasks.putIfAbsent(taskid, new TaskCommunication(taskid, communication));
@@ -56,7 +58,6 @@ public class TaskMonitor {
     public TaskCommunication getTaskCommunication(Integer taskid) {
         return tasks.get(taskid);
     }
-
 
     public static class TaskCommunication {
         private Integer taskid;
@@ -74,20 +75,17 @@ public class TaskMonitor {
         }
 
         public void report(Communication communication) {
-
             ttl = System.currentTimeMillis();
             //采集的数量增长，则变更当前记录, 优先判断这个条件，因为目的是不卡住，而不是expired
             if (CommunicationTool.getTotalReadRecords(communication) > lastAllReadRecords) {
                 lastAllReadRecords = CommunicationTool.getTotalReadRecords(communication);
                 lastUpdateComunicationTS = ttl;
             } else if (isExpired(lastUpdateComunicationTS)) {
+                // 如果一段时间没有report，就failed
                 communication.setState(State.FAILED);
                 communication.setTimestamp(ttl);
-                communication.setThrowable(DataXException.asDataXException(CommonErrorCode.TASK_HUNG_EXPIRED,
-                        String.format("task(%s) hung expired [allReadRecord(%s), elased(%s)]", taskid, lastAllReadRecords, (ttl - lastUpdateComunicationTS))));
+                communication.setThrowable(DataXException.asDataXException(CommonErrorCode.TASK_HUNG_EXPIRED, String.format("task(%s) hung expired [allReadRecord(%s), elased(%s)]", taskid, lastAllReadRecords, (ttl - lastUpdateComunicationTS))));
             }
-
-
         }
 
         private boolean isExpired(long lastUpdateComunicationTS) {

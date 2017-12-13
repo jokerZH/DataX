@@ -9,7 +9,7 @@ public class Key {
 	public static final String KEY_HBASE_BATCHROWS = "batchRows";
 	public static final String KEY_HBASE_CONF = "configuration";
 	
-	public static final String KEY_ZK_PARENT = "zookeeper.znode.parent";
+		public static final String KEY_ZK_PARENT = "zookeeper.znode.parent";
 	public static final String KEY_ZK_QUORUM = "hbase.zookeeper.quorum";
 	public static final String KEY_ZK_CLIENTPORT = "hbase.zookeeper.clientPort";
 }
