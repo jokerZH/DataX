@@ -15,24 +15,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-/* 对应一个job，启动一个任务, 并对这个任务做统计 */
+/* 对应一个job，启动一个任务, 并对这个任务做持续的统计和检测 */
 public abstract class AbstractScheduler {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractScheduler.class);
 
-    private ErrorRecordChecker errorLimit;  // 检查错误是否超过限制
+    private ErrorRecordChecker errorLimit;                      // 检查错误是否超过限制
+    private AbstractContainerCommunicator containerCommunicator;// 统计信息的收集和提交
+    private Long jobId;                                         // jobId
 
-    private AbstractContainerCommunicator containerCommunicator;
+    public Long getJobId() { return jobId; }
+    public AbstractScheduler(AbstractContainerCommunicator containerCommunicator) { this.containerCommunicator = containerCommunicator; }
 
-    private Long jobId;
-
-    public Long getJobId() {
-        return jobId;
-    }
-
-    public AbstractScheduler(AbstractContainerCommunicator containerCommunicator) {
-        this.containerCommunicator = containerCommunicator;
-    }
-
+    // 启动任务，并且定期的获得任务返回的统计信息，报告统计信息，同时处理任务完成或者失败，被kill的情况
     public void schedule(List<Configuration> configurations) {
         Validate.notNull(configurations,"scheduler配置不能为空");
 
@@ -49,7 +43,6 @@ public abstract class AbstractScheduler {
         startAllTaskGroup(configurations);
 
         Communication lastJobContainerCommunication = new Communication();
-
         long lastReportTimeStamp = System.currentTimeMillis();
         try {
             while (true) {
@@ -101,13 +94,7 @@ public abstract class AbstractScheduler {
         }
     }
 
-    /* 启动task */
-    protected abstract void startAllTaskGroup(List<Configuration> configurations);
-
-    protected abstract void dealFailedStat(AbstractContainerCommunicator frameworkCollector, Throwable throwable);
-
-    protected abstract void dealKillingStat(AbstractContainerCommunicator frameworkCollector, int totalTasks);
-
+    // 获得总体任务数目
     private int calculateTaskCount(List<Configuration> configurations) {
         int totalTasks = 0;
         for (Configuration taskGroupConfiguration : configurations) {
@@ -116,5 +103,9 @@ public abstract class AbstractScheduler {
         return totalTasks;
     }
 
+    /* 启动task */
+    protected abstract void startAllTaskGroup(List<Configuration> configurations);
+    protected abstract void dealFailedStat(AbstractContainerCommunicator frameworkCollector, Throwable throwable);
+    protected abstract void dealKillingStat(AbstractContainerCommunicator frameworkCollector, int totalTasks);
     protected  abstract  boolean isJobKilling(Long jobId);
 }

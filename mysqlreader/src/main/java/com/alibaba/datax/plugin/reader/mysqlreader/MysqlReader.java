@@ -12,15 +12,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class MysqlReader extends Reader {
-
     private static final DataBaseType DATABASE_TYPE = DataBaseType.MySql;
 
     public static class Job extends Reader.Job {
-        private static final Logger LOG = LoggerFactory
-                .getLogger(Job.class);
+        private static final Logger LOG = LoggerFactory.getLogger(Job.class);
 
-        private Configuration originalConfig = null;
-        private CommonRdbmsReader.Job commonRdbmsReaderJob;
+        private Configuration originalConfig = null;    /* 配置 */
+        private CommonRdbmsReader.Job commonRdbmsReaderJob; /* jdbc同一实现 */
 
         @Override
         public void init() {

@@ -20,17 +20,15 @@ import java.util.*;
 public final class WriterUtil {
     private static final Logger LOG = LoggerFactory.getLogger(WriterUtil.class);
 
-    //TODO 切分报错
-    public static List<Configuration> doSplit(Configuration simplifiedConf,
-                                              int adviceNumber) {
-
+    // 切分成channel的配置
+    public static List<Configuration> doSplit(Configuration simplifiedConf, int adviceNumber) {
         List<Configuration> splitResultConfigs = new ArrayList<Configuration>();
-
         int tableNumber = simplifiedConf.getInt(Constant.TABLE_NUMBER_MARK);
 
         //处理单表的情况
         if (tableNumber == 1) {
             //由于在之前的  master prepare 中已经把 table,jdbcUrl 提取出来，所以这里处理十分简单
+            // 切分成多个任务，内容是一样的
             for (int j = 0; j < adviceNumber; j++) {
                 splitResultConfigs.add(simplifiedConf.clone());
             }
@@ -39,27 +37,22 @@ public final class WriterUtil {
         }
 
         if (tableNumber != adviceNumber) {
-            throw DataXException.asDataXException(DBUtilErrorCode.CONF_ERROR,
-                    String.format("您的配置文件中的列配置信息有误. 您要写入的目的端的表个数是:%s , 但是根据系统建议需要切分的份数是：%s. 请检查您的配置并作出修改.",
-                            tableNumber, adviceNumber));
+            throw DataXException.asDataXException(DBUtilErrorCode.CONF_ERROR, String.format("您的配置文件中的列配置信息有误. 您要写入的目的端的表个数是:%s , 但是根据系统建议需要切分的份数是：%s. 请检查您的配置并作出修改.", tableNumber, adviceNumber));
         }
 
+        // 任务数目和表数目是一样的
         String jdbcUrl;
         List<String> preSqls = simplifiedConf.getList(Key.PRE_SQL, String.class);
         List<String> postSqls = simplifiedConf.getList(Key.POST_SQL, String.class);
-
-        List<Object> conns = simplifiedConf.getList(Constant.CONN_MARK,
-                Object.class);
-
+        List<Object> conns = simplifiedConf.getList(Constant.CONN_MARK, Object.class);
+        // 每个表买个连接一个任务
         for (Object conn : conns) {
             Configuration sliceConfig = simplifiedConf.clone();
 
             Configuration connConf = Configuration.from(conn.toString());
             jdbcUrl = connConf.getString(Key.JDBC_URL);
             sliceConfig.set(Key.JDBC_URL, jdbcUrl);
-
             sliceConfig.remove(Constant.CONN_MARK);
-
             List<String> tables = connConf.getList(Key.TABLE, String.class);
 
             for (String table : tables) {
@@ -67,10 +60,8 @@ public final class WriterUtil {
                 tempSlice.set(Key.TABLE, table);
                 tempSlice.set(Key.PRE_SQL, renderPreOrPostSqls(preSqls, table));
                 tempSlice.set(Key.POST_SQL, renderPreOrPostSqls(postSqls, table));
-
                 splitResultConfigs.add(tempSlice);
             }
-
         }
 
         return splitResultConfigs;
@@ -92,6 +83,7 @@ public final class WriterUtil {
         return renderedSqls;
     }
 
+    // 预先执行
     public static void executeSqls(Connection conn, List<String> sqls, String basicMessage,DataBaseType dataBaseType) {
         Statement stmt = null;
         String currentSql = null;
@@ -108,14 +100,14 @@ public final class WriterUtil {
         }
     }
 
+    // 生产写入sql 主要是insert和update
     public static String getWriteTemplate(List<String> columnHolders, List<String> valueHolders, String writeMode, DataBaseType dataBaseType, boolean forceUseUpdate) {
         boolean isWriteModeLegal = writeMode.trim().toLowerCase().startsWith("insert")
                 || writeMode.trim().toLowerCase().startsWith("replace")
                 || writeMode.trim().toLowerCase().startsWith("update");
 
         if (!isWriteModeLegal) {
-            throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_VALUE,
-                    String.format("您所配置的 writeMode:%s 错误. 因为DataX 目前仅支持replace,update 或 insert 方式. 请检查您的配置并作出修改.", writeMode));
+            throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_VALUE, String.format("您所配置的 writeMode:%s 错误. 因为DataX 目前仅支持replace,update 或 insert 方式. 请检查您的配置并作出修改.", writeMode));
         }
         // && writeMode.trim().toLowerCase().startsWith("replace")
         String writeDataSqlTemplate;

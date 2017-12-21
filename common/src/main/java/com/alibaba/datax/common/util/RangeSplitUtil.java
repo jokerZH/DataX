@@ -11,11 +11,11 @@ import java.util.*;
  */
 public final class RangeSplitUtil {
 
+    // 现将string转成bigInteger，然后切分，然后再将bigInteger转成String
     public static String[] doAsciiStringSplit(String left, String right, int expectSliceNumber) {
         int radix = 128;
 
-        BigInteger[] tempResult = doBigIntegerSplit(stringToBigInteger(left, radix),
-                stringToBigInteger(right, radix), expectSliceNumber);
+        BigInteger[] tempResult = doBigIntegerSplit(stringToBigInteger(left, radix), stringToBigInteger(right, radix), expectSliceNumber);
         String[] result = new String[tempResult.length];
 
         //处理第一个字符串（因为：在转换为数字，再还原的时候，如果首字符刚好是 basic,则不知道应该添加多少个 basic）
@@ -31,8 +31,7 @@ public final class RangeSplitUtil {
 
 
     public static long[] doLongSplit(long left, long right, int expectSliceNumber) {
-        BigInteger[] result = doBigIntegerSplit(BigInteger.valueOf(left),
-                BigInteger.valueOf(right), expectSliceNumber);
+        BigInteger[] result = doBigIntegerSplit(BigInteger.valueOf(left), BigInteger.valueOf(right), expectSliceNumber);
         long[] returnResult = new long[result.length];
         for (int i = 0, len = result.length; i < len; i++) {
             returnResult[i] = result[i].longValue();
@@ -40,15 +39,14 @@ public final class RangeSplitUtil {
         return returnResult;
     }
 
+    /* 将left到right的范围等分 */
     public static BigInteger[] doBigIntegerSplit(BigInteger left, BigInteger right, int expectSliceNumber) {
         if (expectSliceNumber < 1) {
-            throw new IllegalArgumentException(String.format(
-                    "切分份数不能小于1. 此处:expectSliceNumber=[%s].", expectSliceNumber));
+            throw new IllegalArgumentException(String.format("切分份数不能小于1. 此处:expectSliceNumber=[%s].", expectSliceNumber));
         }
 
         if (null == left || null == right) {
-            throw new IllegalArgumentException(String.format(
-                    "对 BigInteger 进行切分时，其左右区间不能为 null. 此处:left=[%s],right=[%s].", left, right));
+            throw new IllegalArgumentException(String.format("对 BigInteger 进行切分时，其左右区间不能为 null. 此处:left=[%s],right=[%s].", left, right));
         }
 
         if (left.compareTo(right) == 0) {
@@ -63,7 +61,6 @@ public final class RangeSplitUtil {
 
             //left < right
             BigInteger endAndStartGap = right.subtract(left);
-
             BigInteger step = endAndStartGap.divide(BigInteger.valueOf(expectSliceNumber));
             BigInteger remainder = endAndStartGap.remainder(BigInteger.valueOf(expectSliceNumber));
 
@@ -83,8 +80,7 @@ public final class RangeSplitUtil {
             for (int i = 1; i < expectSliceNumber; i++) {
                 lowerBound = upperBound;
                 upperBound = lowerBound.add(step);
-                upperBound = upperBound.add((remainder.compareTo(BigInteger.valueOf(i)) >= 0)
-                        ? BigInteger.ONE : BigInteger.ZERO);
+                upperBound = upperBound.add((remainder.compareTo(BigInteger.valueOf(i)) >= 0) ? BigInteger.ONE : BigInteger.ZERO);
                 result[i] = upperBound;
             }
 

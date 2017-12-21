@@ -22,16 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SingleTableSplitUtil {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(SingleTableSplitUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SingleTableSplitUtil.class);
 
     public static DataBaseType DATABASE_TYPE;
 
-    private SingleTableSplitUtil() {
-    }
+    private SingleTableSplitUtil() { }
 
-    public static List<Configuration> splitSingleTable(
-            Configuration configuration, int adviceNum) {
+    // 确定最终执行的sql
+    public static List<Configuration> splitSingleTable(Configuration configuration, int adviceNum) {
         List<Configuration> pluginParams = new ArrayList<Configuration>();
         List<String> rangeList;
         String splitPkName = configuration.getString(Key.SPLIT_PK);
@@ -43,14 +41,12 @@ public class SingleTableSplitUtil {
         //String splitMode = configuration.getString(Key.SPLIT_MODE, "");
         //if (Constant.SPLIT_MODE_RANDOMSAMPLE.equals(splitMode) && DATABASE_TYPE == DataBaseType.Oracle) {
         if (DATABASE_TYPE == DataBaseType.Oracle) {
-            rangeList = genSplitSqlForOracle(splitPkName, table, where,
-                    configuration, adviceNum);
+            rangeList = genSplitSqlForOracle(splitPkName, table, where, configuration, adviceNum);
             // warn: mysql etc to be added...
         } else {
             Pair<Object, Object> minMaxPK = getPkRange(configuration);
             if (null == minMaxPK) {
-                throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_SPLIT_PK,
-                        "根据切分主键切分表失败. DataX 仅支持切分主键为一个,并且类型为整数或者字符串类型. 请尝试使用其他的切分主键或者联系 DBA 进行处理.");
+                throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_SPLIT_PK, "根据切分主键切分表失败. DataX 仅支持切分主键为一个,并且类型为整数或者字符串类型. 请尝试使用其他的切分主键或者联系 DBA 进行处理.");
             }
 
             configuration.set(Key.QUERY_SQL, buildQuerySql(column, table, where));
@@ -60,36 +56,26 @@ public class SingleTableSplitUtil {
                 return pluginParams;
             }
 
-            boolean isStringType = Constant.PK_TYPE_STRING.equals(configuration
-                    .getString(Constant.PK_TYPE));
-            boolean isLongType = Constant.PK_TYPE_LONG.equals(configuration
-                    .getString(Constant.PK_TYPE));
+            boolean isStringType = Constant.PK_TYPE_STRING.equals(configuration .getString(Constant.PK_TYPE));
+            boolean isLongType = Constant.PK_TYPE_LONG.equals(configuration .getString(Constant.PK_TYPE));
 
             
             if (isStringType) {
-                rangeList = RdbmsRangeSplitWrap.splitAndWrap(
-                        String.valueOf(minMaxPK.getLeft()),
-                        String.valueOf(minMaxPK.getRight()), adviceNum,
-                        splitPkName, "'", DATABASE_TYPE);
+                rangeList = RdbmsRangeSplitWrap.splitAndWrap(String.valueOf(minMaxPK.getLeft()), String.valueOf(minMaxPK.getRight()), adviceNum, splitPkName, "'", DATABASE_TYPE);
             } else if (isLongType) {
-                rangeList = RdbmsRangeSplitWrap.splitAndWrap(
-                        new BigInteger(minMaxPK.getLeft().toString()),
-                        new BigInteger(minMaxPK.getRight().toString()),
-                        adviceNum, splitPkName);
+                rangeList = RdbmsRangeSplitWrap.splitAndWrap(new BigInteger(minMaxPK.getLeft().toString()), new BigInteger(minMaxPK.getRight().toString()), adviceNum, splitPkName);
             } else {
-                throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_SPLIT_PK,
-                        "您配置的切分主键(splitPk) 类型 DataX 不支持. DataX 仅支持切分主键为一个,并且类型为整数或者字符串类型. 请尝试使用其他的切分主键或者联系 DBA 进行处理.");
+                throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_SPLIT_PK, "您配置的切分主键(splitPk) 类型 DataX 不支持. DataX 仅支持切分主键为一个,并且类型为整数或者字符串类型. 请尝试使用其他的切分主键或者联系 DBA 进行处理.");
             }
         }
         String tempQuerySql;
+        // 拉取数据的sql
         List<String> allQuerySql = new ArrayList<String>();
-
         if (null != rangeList && !rangeList.isEmpty()) {
             for (String range : rangeList) {
                 Configuration tempConfig = configuration.clone();
 
-                tempQuerySql = buildQuerySql(column, table, where)
-                        + (hasWhere ? " and " : " where ") + range;
+                tempQuerySql = buildQuerySql(column, table, where) + (hasWhere ? " and " : " where ") + range;
 
                 allQuerySql.add(tempQuerySql);
                 tempConfig.set(Key.QUERY_SQL, tempQuerySql);
@@ -98,9 +84,7 @@ public class SingleTableSplitUtil {
         } else {
             //pluginParams.add(configuration); // this is wrong for new & old split
             Configuration tempConfig = configuration.clone();
-            tempQuerySql = buildQuerySql(column, table, where)
-                    + (hasWhere ? " and " : " where ")
-                    + String.format(" %s IS NOT NULL", splitPkName);
+            tempQuerySql = buildQuerySql(column, table, where) + (hasWhere ? " and " : " where ") + String.format(" %s IS NOT NULL", splitPkName);
             allQuerySql.add(tempQuerySql);
             tempConfig.set(Key.QUERY_SQL, tempQuerySql);
             pluginParams.add(tempConfig);
@@ -108,14 +92,10 @@ public class SingleTableSplitUtil {
 
         // deal pk is null
         Configuration tempConfig = configuration.clone();
-        tempQuerySql = buildQuerySql(column, table, where)
-                + (hasWhere ? " and " : " where ")
-                + String.format(" %s IS NULL", splitPkName);
-
+        tempQuerySql = buildQuerySql(column, table, where) + (hasWhere ? " and " : " where ") + String.format(" %s IS NULL", splitPkName);
         allQuerySql.add(tempQuerySql);
 
-        LOG.info("After split(), allQuerySql=[\n{}\n].",
-                StringUtils.join(allQuerySql, "\n"));
+        LOG.info("After split(), allQuerySql=[\n{}\n].", StringUtils.join(allQuerySql, "\n"));
 
         tempConfig.set(Key.QUERY_SQL, tempQuerySql);
         pluginParams.add(tempConfig);
@@ -123,16 +103,13 @@ public class SingleTableSplitUtil {
         return pluginParams;
     }
 
-    public static String buildQuerySql(String column, String table,
-                                          String where) {
+    public static String buildQuerySql(String column, String table, String where) {
         String querySql;
 
         if (StringUtils.isBlank(where)) {
-            querySql = String.format(Constant.QUERY_SQL_TEMPLATE_WITHOUT_WHERE,
-                    column, table);
+            querySql = String.format(Constant.QUERY_SQL_TEMPLATE_WITHOUT_WHERE, column, table);
         } else {
-            querySql = String.format(Constant.QUERY_SQL_TEMPLATE, column,
-                    table, where);
+            querySql = String.format(Constant.QUERY_SQL_TEMPLATE, column, table, where);
         }
 
         return querySql;
@@ -154,22 +131,19 @@ public class SingleTableSplitUtil {
         return minMaxPK;
     }
 
-    public static void precheckSplitPk(Connection conn, String pkRangeSQL, int fetchSize,
-                                                       String table, String username) {
+    // splitPk是什麼 TODO
+    public static void precheckSplitPk(Connection conn, String pkRangeSQL, int fetchSize, String table, String username) {
         Pair<Object, Object> minMaxPK = checkSplitPk(conn, pkRangeSQL, fetchSize, table, username, null);
         if (null == minMaxPK) {
-            throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_SPLIT_PK,
-                    "根据切分主键切分表失败. DataX 仅支持切分主键为一个,并且类型为整数或者字符串类型. 请尝试使用其他的切分主键或者联系 DBA 进行处理.");
+            throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_SPLIT_PK, "根据切分主键切分表失败. DataX 仅支持切分主键为一个,并且类型为整数或者字符串类型. 请尝试使用其他的切分主键或者联系 DBA 进行处理.");
         }
     }
 
     /**
      * 检测splitPk的配置是否正确。
      * configuration为null, 是precheck的逻辑，不需要回写PK_TYPE到configuration中
-     *
      */
-    private static Pair<Object, Object> checkSplitPk(Connection conn, String pkRangeSQL, int fetchSize,  String table,
-                                                     String username, Configuration configuration) {
+    private static Pair<Object, Object> checkSplitPk(Connection conn, String pkRangeSQL, int fetchSize,  String table, String username, Configuration configuration) {
         LOG.info("split pk [sql={}] is running... ", pkRangeSQL);
         ResultSet rs = null;
         Pair<Object, Object> minMaxPK = null;
@@ -183,27 +157,24 @@ public class SingleTableSplitUtil {
             if (isPKTypeValid(rsMetaData)) {
                 if (isStringType(rsMetaData.getColumnType(1))) {
                     if(configuration != null) {
-                        configuration
-                                .set(Constant.PK_TYPE, Constant.PK_TYPE_STRING);
+                        configuration.set(Constant.PK_TYPE, Constant.PK_TYPE_STRING);
                     }
                     while (DBUtil.asyncResultSetNext(rs)) {
-                        minMaxPK = new ImmutablePair<Object, Object>(
-                                rs.getString(1), rs.getString(2));
+                        minMaxPK = new ImmutablePair<Object, Object>(rs.getString(1), rs.getString(2));
                     }
+
                 } else if (isLongType(rsMetaData.getColumnType(1))) {
                     if(configuration != null) {
                         configuration.set(Constant.PK_TYPE, Constant.PK_TYPE_LONG);
                     }
 
                     while (DBUtil.asyncResultSetNext(rs)) {
-                        minMaxPK = new ImmutablePair<Object, Object>(
-                                rs.getString(1), rs.getString(2));
+                        minMaxPK = new ImmutablePair<Object, Object>(rs.getString(1), rs.getString(2));
 
                         // check: string shouldn't contain '.', for oracle
                         String minMax = rs.getString(1) + rs.getString(2);
                         if (StringUtils.contains(minMax, '.')) {
-                            throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_SPLIT_PK,
-                                    "您配置的DataX切分主键(splitPk)有误. 因为您配置的切分主键(splitPk) 类型 DataX 不支持. DataX 仅支持切分主键为一个,并且类型为整数或者字符串类型. 请尝试使用其他的切分主键或者联系 DBA 进行处理.");
+                            throw DataXException.asDataXException(DBUtilErrorCode.ILLEGAL_SPLIT_PK, "您配置的DataX切分主键(splitPk)有误. 因为您配置的切分主键(splitPk) 类型 DataX 不支持. DataX 仅支持切分主键为一个,并且类型为整数或者字符串类型. 请尝试使用其他的切分主键或者联系 DBA 进行处理.");
                         }
                     }
                 } else {
@@ -225,6 +196,7 @@ public class SingleTableSplitUtil {
         return minMaxPK;
     }
 
+    /* 判断rsMetaData中的 1 2字段的类型是否相同 且是 number或者string */
     private static boolean isPKTypeValid(ResultSetMetaData rsMetaData) {
         boolean ret = false;
         try {
@@ -232,7 +204,6 @@ public class SingleTableSplitUtil {
             int maxType = rsMetaData.getColumnType(2);
 
             boolean isNumberType = isLongType(minType);
-
             boolean isStringType = isStringType(minType);
 
             if (minType == maxType && (isNumberType || isStringType)) {
@@ -263,13 +234,10 @@ public class SingleTableSplitUtil {
     }
     
     private static boolean isStringType(int type) {
-        return type == Types.CHAR || type == Types.NCHAR
-                || type == Types.VARCHAR || type == Types.LONGVARCHAR
-                || type == Types.NVARCHAR;
+        return type == Types.CHAR || type == Types.NCHAR || type == Types.VARCHAR || type == Types.LONGVARCHAR || type == Types.NVARCHAR;
     }
 
     private static String genPKRangeSQL(Configuration configuration) {
-
         String splitPK = configuration.getString(Key.SPLIT_PK).trim();
         String table = configuration.getString(Key.TABLE).trim();
         String where = configuration.getString(Key.WHERE, null);
@@ -277,13 +245,10 @@ public class SingleTableSplitUtil {
     }
 
     public static String genPKSql(String splitPK, String table, String where){
-
         String minMaxTemplate = "SELECT MIN(%s),MAX(%s) FROM %s";
-        String pkRangeSQL = String.format(minMaxTemplate, splitPK, splitPK,
-                table);
+        String pkRangeSQL = String.format(minMaxTemplate, splitPK, splitPK, table);
         if (StringUtils.isNotBlank(where)) {
-            pkRangeSQL = String.format("%s WHERE (%s AND %s IS NOT NULL)",
-                    pkRangeSQL, where, splitPK);
+            pkRangeSQL = String.format("%s WHERE (%s AND %s IS NOT NULL)", pkRangeSQL, where, splitPK);
         }
         return pkRangeSQL;
     }

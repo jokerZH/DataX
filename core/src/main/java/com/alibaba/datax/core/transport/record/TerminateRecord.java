@@ -3,23 +3,17 @@ package com.alibaba.datax.core.transport.record;
 import com.alibaba.datax.common.element.Column;
 import com.alibaba.datax.common.element.Record;
 
-/**
- * 作为标示 生产者已经完成生产的标志
- * 
- */
+/* 作为标示 生产者已经完成生产的标志 */
 public class TerminateRecord implements Record {
 	private final static TerminateRecord SINGLE = new TerminateRecord();
 
-	private TerminateRecord() {
-	}
-
+	private TerminateRecord() { }
 	public static TerminateRecord get() {
 		return SINGLE;
 	}
 
 	@Override
-	public void addColumn(Column column) {
-	}
+	public void addColumn(Column column) { }
 
 	@Override
 	public Column getColumn(int i) {

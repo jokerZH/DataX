@@ -9,12 +9,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /* 本地统计信息记录中心 */
 public final class LocalTGCommunicationManager {
-    private static Map<Integer, Communication> taskGroupCommunicationMap = new ConcurrentHashMap<Integer, Communication>();
+    private static Map<Integer/*taskId*/, Communication> taskGroupCommunicationMap = new ConcurrentHashMap<Integer, Communication>();
 
     public static void registerTaskGroupCommunication(int taskGroupId, Communication communication) {
         taskGroupCommunicationMap.put(taskGroupId, communication);
     }
 
+    // 获得整个job的统计信息
     public static Communication getJobCommunication() {
         Communication communication = new Communication();
         communication.setState(State.SUCCEEDED);

@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 public final class ErrorRecordChecker {
     private static final Logger LOG = LoggerFactory.getLogger(ErrorRecordChecker.class);
 
-    private Long recordLimit;
-    private Double percentageLimit;
+    private Long recordLimit;       // 最大错误record数目
+    private Double percentageLimit; // 错误record占用的百分比
 
     public ErrorRecordChecker(Configuration configuration) {
         this(configuration.getLong(CoreConstant.DATAX_JOB_SETTING_ERRORLIMIT_RECORD), configuration.getDouble(CoreConstant.DATAX_JOB_SETTING_ERRORLIMIT_PERCENT));

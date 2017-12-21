@@ -38,25 +38,10 @@ import java.util.*;
 public class TaskGroupContainer extends AbstractContainer {
     private static final Logger LOG = LoggerFactory.getLogger(TaskGroupContainer.class);
 
-    /**
-     * 当前taskGroup所属jobId
-     */
-    private long jobId;
-
-    /**
-     * 当前taskGroupId
-     */
-    private int taskGroupId;
-
-    /**
-     * 使用的channel类
-     */
-    private String channelClazz;
-
-    /**
-     * task收集器使用的类
-     */
-    private String taskCollectorClass;
+    private long jobId;             /* 当前taskGroup所属jobId */
+    private int taskGroupId;        /* 当前taskGroupId */
+    private String channelClazz;    /* 使用的channel类 */
+    private String taskCollectorClass;  /* task收集器使用的类 */
 
     private TaskMonitor taskMonitor = TaskMonitor.getInstance();
 
@@ -76,13 +61,8 @@ public class TaskGroupContainer extends AbstractContainer {
         super.setContainerCommunicator(new StandaloneTGContainerCommunicator(configuration));
     }
 
-    public long getJobId() {
-        return jobId;
-    }
-
-    public int getTaskGroupId() {
-        return taskGroupId;
-    }
+    public long getJobId() { return jobId; }
+    public int getTaskGroupId() { return taskGroupId; }
 
     @Override
     public void start() {

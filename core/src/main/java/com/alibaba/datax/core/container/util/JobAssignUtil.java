@@ -22,8 +22,7 @@ public final class JobAssignUtil {
         List<Configuration> contentConfig = configuration.getListConfiguration(CoreConstant.DATAX_JOB_CONTENT);
         Validate.isTrue(contentConfig.size() > 0, "框架获得的切分后的 Job 无内容.");
 
-        Validate.isTrue(channelNumber > 0 && channelsPerTaskGroup > 0,
-                "每个channel的平均task数[averTaskPerChannel]，channel数目[channelNumber]，每个taskGroup的平均channel数[channelsPerTaskGroup]都应该为正数");
+        Validate.isTrue(channelNumber > 0 && channelsPerTaskGroup > 0, "每个channel的平均task数[averTaskPerChannel]，channel数目[channelNumber]，每个taskGroup的平均channel数[channelsPerTaskGroup]都应该为正数");
 
         int taskGroupNumber = (int) Math.ceil(1.0 * channelNumber / channelsPerTaskGroup);
 

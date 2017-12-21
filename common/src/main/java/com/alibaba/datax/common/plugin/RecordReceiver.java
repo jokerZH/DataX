@@ -18,6 +18,7 @@ package com.alibaba.datax.common.plugin;
 
 import com.alibaba.datax.common.element.Record;
 
+/* writer用于获得数据 */
 public interface RecordReceiver {
 
 	public Record getFromReader();

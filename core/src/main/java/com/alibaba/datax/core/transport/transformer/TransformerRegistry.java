@@ -16,10 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * no comments.
- * Created by liqiang on 16/3/3.
- */
+/* */
 public class TransformerRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransformerRegistry.class);
@@ -45,7 +42,6 @@ public class TransformerRegistry {
 
 
     public static void loadTransformerFromLocalStorage(List<String> transformers) {
-
         String[] paths = new File(CoreConstant.DATAX_STORAGE_TRANSFORMER_HOME).list();
         if (null == paths) {
             return;

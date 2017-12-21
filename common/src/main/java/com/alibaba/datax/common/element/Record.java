@@ -3,7 +3,6 @@ package com.alibaba.datax.common.element;
 /**
  * Created by jingxing on 14-8-24.
  */
-
 public interface Record {
 
 	public void addColumn(Column column);
@@ -19,5 +18,4 @@ public interface Record {
 	public int getByteSize();
 
 	public int getMemorySize();
-
 }

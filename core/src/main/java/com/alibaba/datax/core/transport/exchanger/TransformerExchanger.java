@@ -13,13 +13,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-/**
- * no comments.
- * Created by liqiang on 16/3/9.
- */
+/* 负责数据转换 */
 public abstract class TransformerExchanger {
-
     private static final Logger LOG = LoggerFactory.getLogger(TransformerExchanger.class);
+
     protected final TaskPluginCollector pluginCollector;
 
     protected final int taskGroupId;
@@ -33,9 +30,7 @@ public abstract class TransformerExchanger {
 
 
     private List<TransformerExecution> transformerExecs;
-
-    private ClassLoaderSwapper classLoaderSwapper = ClassLoaderSwapper
-            .newCurrentThreadClassLoaderSwapper();
+    private ClassLoaderSwapper classLoaderSwapper = ClassLoaderSwapper.newCurrentThreadClassLoaderSwapper();
 
 
     public TransformerExchanger(int taskGroupId, int taskId, Communication communication,
@@ -50,6 +45,7 @@ public abstract class TransformerExchanger {
     }
 
 
+    // msg的转化
     public Record doTransformer(Record record) {
         if (transformerExecs == null || transformerExecs.size() == 0) {
             return record;

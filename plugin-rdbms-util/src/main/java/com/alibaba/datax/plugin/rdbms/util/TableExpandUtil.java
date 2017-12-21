@@ -6,28 +6,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class TableExpandUtil {
-
 	// schema.table[0-2]more
 	// 1 2 3 4 5
-	public static Pattern pattern = Pattern
-			.compile("(\\w+\\.)?(\\w+)\\[(\\d+)-(\\d+)\\](.*)");
+	public static Pattern pattern = Pattern.compile("(\\w+\\.)?(\\w+)\\[(\\d+)-(\\d+)\\](.*)");
+	private TableExpandUtil() { }
 
-	private TableExpandUtil() {
-	}
-
-	/**
-	 * Split the table string(Usually contains names of some tables) to a List
-	 * that is formated. example: table[0-32] will be splitted into `table0`,
-	 * `table1`, `table2`, ... ,`table32` in {@link List}
-	 *
-	 * @param tables
-	 *            a string contains table name(one or many).
-	 * @return a split result of table name.
-	 *         <p/>
-	 *         TODO 删除参数 DataBaseType
-	 */
-	public static List<String> splitTables(DataBaseType dataBaseType,
-			String tables) {
+	/* table[0-32] -> `table0`, `table1`, `table2`, ... ,`table32` */
+	public static List<String> splitTables(DataBaseType dataBaseType, String tables) {
 		List<String> splittedTables = new ArrayList<String>();
 
 		String[] tableArrays = tables.split(",");
@@ -69,8 +54,8 @@ public final class TableExpandUtil {
 		return splittedTables;
 	}
 
-	public static List<String> expandTableConf(DataBaseType dataBaseType,
-			List<String> tables) {
+	/* 对表的名字进行解压缩 */
+	public static List<String> expandTableConf(DataBaseType dataBaseType, List<String> tables) {
 		List<String> parsedTables = new ArrayList<String>();
 		for (String table : tables) {
 			List<String> splittedTables = splitTables(dataBaseType, table);
@@ -79,5 +64,4 @@ public final class TableExpandUtil {
 
 		return parsedTables;
 	}
-
 }

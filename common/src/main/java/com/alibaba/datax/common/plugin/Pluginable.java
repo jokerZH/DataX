@@ -26,5 +26,4 @@ public interface Pluginable {
     void setPeerPluginJobConf(Configuration peerPluginJobConf);
 
     public void setPeerPluginName(String peerPluginName);
-
 }

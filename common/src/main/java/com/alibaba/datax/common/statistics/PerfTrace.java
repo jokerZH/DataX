@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class PerfTrace {
-
     private static Logger LOG = LoggerFactory.getLogger(PerfTrace.class);
     private static PerfTrace instance;
     private static final Object lock = new Object();
@@ -40,8 +39,8 @@ public class PerfTrace {
     //PHASE => PerfRecord
     private ConcurrentHashMap<PHASE, SumPerfRecord4Print> perfRecordMaps4print = new ConcurrentHashMap<PHASE, SumPerfRecord4Print>();
     // job_phase => SumPerf4Report
-    private SumPerf4Report sumPerf4Report = new SumPerf4Report();
-    private SumPerf4Report sumPerf4Report4NotEnd;
+    private SumPerf4Report sumPerf4Report = new SumPerf4Report();   // 结束的
+    private SumPerf4Report sumPerf4Report4NotEnd;                   // 未结束的
     private Configuration jobInfo;
     private final Set<PerfRecord> needReportPool4NotEnd = new HashSet<PerfRecord>();
     private final List<PerfRecord> totalEndReport = new ArrayList<PerfRecord>();
@@ -440,6 +439,7 @@ public class PerfTrace {
     }
 
 
+    // 3个类型的总运行时间
     public static class SumPerf4Report {
         long totalTaskRunTimeInMs = 0L;
         long odpsCloseTimeInMs = 0L;
@@ -490,17 +490,18 @@ public class PerfTrace {
         }
     }
 
+    // 对应一个阶段, 一个类型的统计单元
     public static class SumPerfRecord4Print {
-        private long perfTimeTotal = 0;
-        private long averageTime = 0;
-        private long maxTime = 0;
-        private int maxTaskId = -1;
-        private int maxTaskGroupId = -1;
-        private int totalCount = 0;
+        private long perfTimeTotal = 0; // 总时间
+        private long averageTime = 0;   //
+        private long maxTime = 0;       // 最长时间
+        private int maxTaskId = -1;     // 最长时间的taskId
+        private int maxTaskGroupId = -1;// 最长时间的groupId
+        private int totalCount = 0;     //
 
-        private long recordsTotal = 0;
-        private long sizesTotal = 0;
-        private long averageRecords = 0;
+        private long recordsTotal = 0;  // 记录数目
+        private long sizesTotal = 0;    // 记录大小
+        private long averageRecords = 0;    // 平均记录大小
         private long averageBytes = 0;
         private long maxRecord = 0;
         private long maxByte = 0;

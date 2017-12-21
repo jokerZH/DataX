@@ -11,43 +11,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * DataX所有的状态及统计信息交互类，job、taskGroup、task等的消息汇报都走该类
- */
+// DataX所有的状态及统计信息交互类，job、taskGroup、task等的消息汇报都走该类
 public class Communication extends BaseObject implements Cloneable {
-    /**
-     * 所有的数值key-value对 *
-     */
-    private Map<String, Number> counter;
+    private Map<String, Number> counter;    /* 所有的数值key-value对 */
+    private State state;                    /* 运行状态 */
+    private Throwable throwable;            /* 异常记录 */
+    private long timestamp;                 /* 记录的timestamp */
+    private Map<String/*key*/, List<String/*value*/>> message;      /* task给job的信息 */
 
-    /**
-     * 运行状态 *
-     */
-    private State state;
 
-    /**
-     * 异常记录 *
-     */
-    private Throwable throwable;
-
-    /**
-     * 记录的timestamp *
-     */
-    private long timestamp;
-
-    /**
-     * task给job的信息 *
-     */
-    Map<String, List<String>> message;
-
-    public Communication() {
-        this.init();
-    }
-
-    public synchronized void reset() {
-        this.init();
-    }
-
+    public Communication() { this.init(); }
+    public synchronized void reset() { this.init(); }
     private void init() {
         this.counter = new ConcurrentHashMap<String, Number>();
         this.state = State.RUNNING;
@@ -56,14 +30,8 @@ public class Communication extends BaseObject implements Cloneable {
         this.timestamp = System.currentTimeMillis();
     }
 
-    public Map<String, Number> getCounter() {
-        return this.counter;
-    }
-
-    public State getState() {
-        return this.state;
-    }
-
+    public Map<String, Number> getCounter() { return this.counter; }
+    public State getState() { return this.state; }
     public synchronized void setState(State state, boolean isForce) {
         if (!isForce && this.state.equals(State.FAILED)) {
             return;
@@ -72,13 +40,8 @@ public class Communication extends BaseObject implements Cloneable {
         this.state = state;
     }
 
-    public synchronized void setState(State state) {
-        setState(state, false);
-    }
-
-    public Throwable getThrowable() {
-        return this.throwable;
-    }
+    public synchronized void setState(State state) { setState(state, false); }
+    public Throwable getThrowable() { return this.throwable; }
 
     public synchronized String getThrowableMessage() {
         return this.throwable == null ? "" : this.throwable.getMessage();

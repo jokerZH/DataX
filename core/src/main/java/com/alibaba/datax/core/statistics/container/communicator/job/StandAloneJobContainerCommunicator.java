@@ -15,13 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 public class StandAloneJobContainerCommunicator extends AbstractContainerCommunicator {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(StandAloneJobContainerCommunicator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StandAloneJobContainerCommunicator.class);
 
     public StandAloneJobContainerCommunicator(Configuration configuration) {
         super(configuration);
-        super.setCollector(new ProcessInnerCollector(configuration.getLong(
-                CoreConstant.DATAX_CORE_CONTAINER_JOB_ID)));
+        super.setCollector(new ProcessInnerCollector(configuration.getLong(CoreConstant.DATAX_CORE_CONTAINER_JOB_ID)));
         super.setReporter(new ProcessInnerReporter());
     }
 

@@ -20,18 +20,14 @@ public final class OverFlowUtil {
 			String.valueOf(Double.MAX_VALUE));
 
 	public static boolean isLongOverflow(final BigInteger integer) {
-		return (integer.compareTo(OverFlowUtil.MAX_LONG) > 0 || integer
-				.compareTo(OverFlowUtil.MIN_LONG) < 0);
-
+		return (integer.compareTo(OverFlowUtil.MAX_LONG) > 0 || integer.compareTo(OverFlowUtil.MIN_LONG) < 0);
 	}
 
 	public static void validateLongNotOverFlow(final BigInteger integer) {
 		boolean isOverFlow = OverFlowUtil.isLongOverflow(integer);
 
 		if (isOverFlow) {
-			throw DataXException.asDataXException(
-					CommonErrorCode.CONVERT_OVER_FLOW,
-					String.format("[%s] 转为Long类型出现溢出 .", integer.toString()));
+			throw DataXException.asDataXException(CommonErrorCode.CONVERT_OVER_FLOW, String.format("[%s] 转为Long类型出现溢出 .", integer.toString()));
 		}
 	}
 
@@ -46,17 +42,14 @@ public final class OverFlowUtil {
 			newDecimal = decimal.negate();
 		}
 
-		return (newDecimal.compareTo(MIN_DOUBLE_POSITIVE) < 0 || newDecimal
-				.compareTo(MAX_DOUBLE_POSITIVE) > 0);
+		return (newDecimal.compareTo(MIN_DOUBLE_POSITIVE) < 0 || newDecimal.compareTo(MAX_DOUBLE_POSITIVE) > 0);
 	}
 
+	/* 查看是否超过double的表示范围*/
 	public static void validateDoubleNotOverFlow(final BigDecimal decimal) {
 		boolean isOverFlow = OverFlowUtil.isDoubleOverFlow(decimal);
 		if (isOverFlow) {
-			throw DataXException.asDataXException(
-					CommonErrorCode.CONVERT_OVER_FLOW,
-					String.format("[%s]转为Double类型出现溢出 .",
-							decimal.toPlainString()));
+			throw DataXException.asDataXException(CommonErrorCode.CONVERT_OVER_FLOW, String.format("[%s]转为Double类型出现溢出 .", decimal.toPlainString()));
 		}
 	}
 }

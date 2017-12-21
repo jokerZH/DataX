@@ -46,8 +46,7 @@ public class Engine {
          */
         LoadUtil.bind(allConf);
 
-        boolean isJob = !("taskGroup".equalsIgnoreCase(allConf
-                .getString(CoreConstant.DATAX_CORE_CONTAINER_MODEL)));
+        boolean isJob = !("taskGroup".equalsIgnoreCase(allConf.getString(CoreConstant.DATAX_CORE_CONTAINER_MODEL)));
         //JobContainer会在schedule后再行进行设置和调整值
         int channelNumber =0;
         AbstractContainer container;
@@ -56,17 +55,13 @@ public class Engine {
         if (isJob) {
             allConf.set(CoreConstant.DATAX_CORE_CONTAINER_JOB_MODE, RUNTIME_MODE);
             container = new JobContainer(allConf);
-            instanceId = allConf.getLong(
-                    CoreConstant.DATAX_CORE_CONTAINER_JOB_ID, 0);
+            instanceId = allConf.getLong(CoreConstant.DATAX_CORE_CONTAINER_JOB_ID, 0);
 
         } else {
             container = new TaskGroupContainer(allConf);
-            instanceId = allConf.getLong(
-                    CoreConstant.DATAX_CORE_CONTAINER_JOB_ID);
-            taskGroupId = allConf.getInt(
-                    CoreConstant.DATAX_CORE_CONTAINER_TASKGROUP_ID);
-            channelNumber = allConf.getInt(
-                    CoreConstant.DATAX_CORE_CONTAINER_TASKGROUP_CHANNEL);
+            instanceId = allConf.getLong(CoreConstant.DATAX_CORE_CONTAINER_JOB_ID);
+            taskGroupId = allConf.getInt(CoreConstant.DATAX_CORE_CONTAINER_TASKGROUP_ID);
+            channelNumber = allConf.getInt(CoreConstant.DATAX_CORE_CONTAINER_TASKGROUP_CHANNEL);
         }
 
         //缺省打开perfTrace

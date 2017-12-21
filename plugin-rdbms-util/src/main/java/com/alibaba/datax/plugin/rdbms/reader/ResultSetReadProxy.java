@@ -15,16 +15,13 @@ import java.sql.ResultSetMetaData;
 import java.sql.Types;
 
 public class ResultSetReadProxy {
-	private static final Logger LOG = LoggerFactory
-			.getLogger(ResultSetReadProxy.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ResultSetReadProxy.class);
 
 	private static final boolean IS_DEBUG = LOG.isDebugEnabled();
 	private static final byte[] EMPTY_CHAR_ARRAY = new byte[0];
 
 	//TODO
-	public static void transportOneRecord(RecordSender recordSender, ResultSet rs, 
-			ResultSetMetaData metaData, int columnNumber, String mandatoryEncoding, 
-			TaskPluginCollector taskPluginCollector) {
+	public static void transportOneRecord(RecordSender recordSender, ResultSet rs, ResultSetMetaData metaData, int columnNumber, String mandatoryEncoding, TaskPluginCollector taskPluginCollector) {
 		Record record = recordSender.createRecord();
 
 		try {

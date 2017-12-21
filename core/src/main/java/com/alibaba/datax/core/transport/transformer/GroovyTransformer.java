@@ -42,6 +42,7 @@ public class GroovyTransformer extends Transformer {
         return this.groovyTransformer.evaluate(record);
     }
 
+    //
     private void initGroovyTransformer(String code, List<String> extraPackage) {
         GroovyClassLoader loader = new GroovyClassLoader(GroovyTransformer.class.getClassLoader());
         String groovyRule = getGroovyRule(code, extraPackage);

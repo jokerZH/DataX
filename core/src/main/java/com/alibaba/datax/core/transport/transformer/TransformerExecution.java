@@ -4,14 +4,9 @@ import com.alibaba.datax.transformer.ComplexTransformer;
 
 import java.util.Map;
 
-/**
- * 每个func对应一个实例.
- * Created by liqiang on 16/3/16.
- */
+/* 每个func对应一个实例. */
 public class TransformerExecution {
-
     private Object[] finalParas;
-
     private final TransformerExecutionParas transformerExecutionParas;
     private final TransformerInfo transformerInfo;
 
@@ -69,33 +64,13 @@ public class TransformerExecution {
     }
 
 
-    public Object[] getFinalParas() {
-        return finalParas;
-    }
-
-    public long getExaustedTime() {
-        return exaustedTime;
-    }
-
-    public long getSuccessRecords() {
-        return successRecords;
-    }
-
-    public long getFailedRecords() {
-        return failedRecords;
-    }
-
-    public long getFilterRecords() {
-        return filterRecords;
-    }
-
-    public void setIsChecked(boolean isChecked) {
-        this.isChecked = isChecked;
-    }
-
-    public boolean isChecked() {
-        return isChecked;
-    }
+    public Object[] getFinalParas() { return finalParas; }
+    public long getExaustedTime() { return exaustedTime; }
+    public long getSuccessRecords() { return successRecords; }
+    public long getFailedRecords() { return failedRecords; }
+    public long getFilterRecords() { return filterRecords; }
+    public void setIsChecked(boolean isChecked) { this.isChecked = isChecked; }
+    public boolean isChecked() { return isChecked; }
 
     /**
      * 一些代理方法

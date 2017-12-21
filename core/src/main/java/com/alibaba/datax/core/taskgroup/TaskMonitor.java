@@ -10,37 +10,30 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by liqiang on 15/7/23.
- *  统计一个task的数据处理情况，如当前读取多少数据，写入多少数据
- */
+/*  统计一个task的数据处理情况，如当前读取多少数据，写入多少数据 单例*/
 public class TaskMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(TaskMonitor.class);
 
     private static final TaskMonitor instance = new TaskMonitor();
     private static long EXPIRED_TIME = 172800 * 1000;
 
-    private ConcurrentHashMap<Integer, TaskCommunication> tasks = new ConcurrentHashMap<Integer, TaskCommunication>();
+    private ConcurrentHashMap<Integer/*taskId*/, TaskCommunication> tasks = new ConcurrentHashMap<Integer, TaskCommunication>();
 
-    private TaskMonitor() {
-    }
-
+    private TaskMonitor() { }
     public static TaskMonitor getInstance() {
         return instance;
     }
 
     public void registerTask(Integer taskid, Communication communication) {
-        //如果task已经finish，直接返回
         if (communication.isFinished()) {
+            //如果task已经finish，直接返回
             return;
         }
+
         tasks.putIfAbsent(taskid, new TaskCommunication(taskid, communication));
     }
 
-    public void removeTask(Integer taskid) {
-        tasks.remove(taskid);
-    }
-
+    public void removeTask(Integer taskid) { tasks.remove(taskid); }
     public void report(Integer taskid, Communication communication) {
         //如果task已经finish，直接返回
         if (communication.isFinished()) {
@@ -59,13 +52,12 @@ public class TaskMonitor {
         return tasks.get(taskid);
     }
 
+    // 一个task的统计信息
     public static class TaskCommunication {
-        private Integer taskid;
-        //记录最后更新的communication
-        private long lastAllReadRecords = -1;
-        //只有第一次，或者统计变更时才会更新TS
-        private long lastUpdateComunicationTS;
-        private long ttl;
+        private Integer taskid;                 // task id
+        private long lastAllReadRecords = -1;   // 读取的行数
+        private long lastUpdateComunicationTS;  // 最近一次更新lastAllReadRecords的时间
+        private long ttl;                       // TODO
 
         private TaskCommunication(Integer taskid, Communication communication) {
             this.taskid = taskid;
@@ -92,20 +84,9 @@ public class TaskMonitor {
             return System.currentTimeMillis() - lastUpdateComunicationTS > EXPIRED_TIME;
         }
 
-        public Integer getTaskid() {
-            return taskid;
-        }
-
-        public long getLastAllReadRecords() {
-            return lastAllReadRecords;
-        }
-
-        public long getLastUpdateComunicationTS() {
-            return lastUpdateComunicationTS;
-        }
-
-        public long getTtl() {
-            return ttl;
-        }
+        public Integer getTaskid() { return taskid; }
+        public long getLastAllReadRecords() { return lastAllReadRecords; }
+        public long getLastUpdateComunicationTS() { return lastUpdateComunicationTS; }
+        public long getTtl() { return ttl; }
     }
 }

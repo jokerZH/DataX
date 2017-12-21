@@ -15,9 +15,7 @@ import java.sql.ResultSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * Created by judy.lt on 2015/6/4.
- */
+/* 执行一次查询sql */
 public class PreCheckTask implements Callable<Boolean>{
     private static final Logger LOG = LoggerFactory.getLogger(PreCheckTask.class);
     private String userName;
@@ -44,15 +42,13 @@ public class PreCheckTask implements Callable<Boolean>{
         List<Object> querySqls = this.connection.getList(Key.QUERY_SQL, Object.class);
         List<Object> splitPkSqls = this.connection.getList(Key.SPLIT_PK_SQL, Object.class);
         List<Object> tables = this.connection.getList(Key.TABLE,Object.class);
-        Connection conn = DBUtil.getConnectionWithoutRetry(this.dataBaseType, jdbcUrl,
-                this.userName, password);
+        Connection conn = DBUtil.getConnectionWithoutRetry(this.dataBaseType, jdbcUrl, this.userName, password);
         int fetchSize = 1;
         if(DataBaseType.MySql.equals(dataBaseType) || DataBaseType.DRDS.equals(dataBaseType)) {
-            fetchSize = Integer.MIN_VALUE;
+            fetchSize = Integer.MIN_VALUE; // 流读取
         }
         try{
             for (int i=0;i<querySqls.size();i++) {
-
                 String splitPkSql = null;
                 String querySql = querySqls.get(i).toString();
 
@@ -61,7 +57,7 @@ public class PreCheckTask implements Callable<Boolean>{
                     table = tables.get(i).toString();
                 }
 
-            /*verify query*/
+                /*verify query*/
                 ResultSet rs = null;
                 try {
                     DBUtil.sqlValid(querySql,dataBaseType);
@@ -75,7 +71,8 @@ public class PreCheckTask implements Callable<Boolean>{
                 } finally {
                     DBUtil.closeDBResources(rs, null, null);
                 }
-            /*verify splitPK*/
+
+                /*verify splitPK*/
                 try{
                     if (splitPkSqls != null && !splitPkSqls.isEmpty()) {
                         splitPkSql = splitPkSqls.get(i).toString();

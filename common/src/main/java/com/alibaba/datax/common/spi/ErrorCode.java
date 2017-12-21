@@ -1,17 +1,6 @@
 package com.alibaba.datax.common.spi;
 
-/**
- * 尤其注意：最好提供toString()实现。例如：
- * 
- * <pre>
- * 
- * &#064;Override
- * public String toString() {
- * 	return String.format(&quot;Code:[%s], Description:[%s]. &quot;, this.code, this.describe);
- * }
- * </pre>
- * 
- */
+/* 尤其注意：最好提供toString()实现 */
 public interface ErrorCode {
 	// 错误码编号
 	String getCode();
@@ -21,13 +10,10 @@ public interface ErrorCode {
 
 	/** 必须提供toString的实现
 	 * 
-	 * <pre>
-	 * &#064;Override
+	 * @Override
 	 * public String toString() {
-	 * 	return String.format(&quot;Code:[%s], Description:[%s]. &quot;, this.code, this.describe);
+	 * 	return String.format("Code:[%s], Description:[%s].", this.code, this.describe);
 	 * }
-	 * </pre>
-	 * 
 	 */
 	String toString();
 }

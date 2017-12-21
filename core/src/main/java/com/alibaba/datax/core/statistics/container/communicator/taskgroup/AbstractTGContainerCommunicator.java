@@ -18,7 +18,6 @@ import java.util.Map;
  * 记录jobId和taskGroupId
  */
 public abstract class AbstractTGContainerCommunicator extends AbstractContainerCommunicator {
-
     protected long jobId;
 
     /**

@@ -9,8 +9,7 @@ import java.util.List;
 
 public final class RdbmsRangeSplitWrap {
 
-    public static List<String> splitAndWrap(String left, String right, int expectSliceNumber,
-                                            String columnName, String quote, DataBaseType dataBaseType) {
+    public static List<String> splitAndWrap(String left, String right, int expectSliceNumber, String columnName, String quote, DataBaseType dataBaseType) {
         String[] tempResult = RangeSplitUtil.doAsciiStringSplit(left, right, expectSliceNumber);
         return RdbmsRangeSplitWrap.wrapRange(tempResult, columnName, quote, dataBaseType);
     }
@@ -42,12 +41,10 @@ public final class RdbmsRangeSplitWrap {
         return wrapRange(rangeStr, columnName, "", null);
     }
 
-    public static List<String> wrapRange(String[] rangeResult, String columnName,
-                                         String quote, DataBaseType dataBaseType) {
+    // 构建各个range对应的where sql语句  如 '1' <= pk and pk <= '3'
+    public static List<String> wrapRange(String[] rangeResult, String columnName, String quote, DataBaseType dataBaseType) {
         if (null == rangeResult || rangeResult.length < 2) {
-            throw new IllegalArgumentException(String.format(
-                    "Parameter rangeResult can not be null and its length can not <2. detail:rangeResult=[%s].",
-                    StringUtils.join(rangeResult, ",")));
+            throw new IllegalArgumentException(String.format( "Parameter rangeResult can not be null and its length can not <2. detail:rangeResult=[%s].", StringUtils.join(rangeResult, ",")));
         }
 
         List<String> result = new ArrayList<String>();

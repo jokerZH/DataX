@@ -14,8 +14,7 @@ import java.util.concurrent.Executors;
 
 /**/
 public abstract class ProcessInnerScheduler extends AbstractScheduler {
-
-    private ExecutorService taskGroupContainerExecutorService;
+    private ExecutorService taskGroupContainerExecutorService;  // 执行task的线程池
 
     public ProcessInnerScheduler(AbstractContainerCommunicator containerCommunicator) {
         super(containerCommunicator);

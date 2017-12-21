@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /* 存储各个task的状态 */
 public abstract class AbstractCollector {
-    private Map<Integer, Communication> taskCommunicationMap = new ConcurrentHashMap<Integer, Communication>();
+    private Map<Integer/*taskId*/, Communication> taskCommunicationMap = new ConcurrentHashMap<Integer, Communication>();
     private Long jobId;     /* jobId */
 
     public Map<Integer, Communication> getTaskCommunicationMap() {
@@ -33,6 +33,7 @@ public abstract class AbstractCollector {
         }
     }
 
+    // 注册各个task的communication
     public void registerTaskCommunication(List<Configuration> taskConfigurationList) {
         for (Configuration taskConfig : taskConfigurationList) {
             int taskId = taskConfig.getInt(CoreConstant.TASK_ID);

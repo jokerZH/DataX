@@ -7,10 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 
-/**
- * no comments.
- * Created by liqiang on 16/3/4.
- */
+/* 过滤 */
 public class FilterTransformer extends Transformer {
     public FilterTransformer() {
         setTransformerName("dx_filter");

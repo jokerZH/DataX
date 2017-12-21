@@ -18,8 +18,10 @@ package com.alibaba.datax.common.plugin;
 
 import com.alibaba.datax.common.element.Record;
 
+/* writer 用于发送数据 */
 public interface RecordSender {
 
+	// 创建record
 	public Record createRecord();
 
 	public void sendToWriter(Record record);

@@ -11,12 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * no comments.
- * Created by liqiang on 16/3/9.
- */
+/* 转化逻辑相关 */
 public class TransformerUtil {
-
     private static final Logger LOG = LoggerFactory.getLogger(TransformerUtil.class);
 
     public static List<TransformerExecution> buildTransformerInfo(Configuration taskConfig) {

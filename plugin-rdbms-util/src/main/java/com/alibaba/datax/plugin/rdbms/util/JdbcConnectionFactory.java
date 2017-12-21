@@ -2,17 +2,11 @@ package com.alibaba.datax.plugin.rdbms.util;
 
 import java.sql.Connection;
 
-/**
- * Date: 15/3/16 下午3:12
- */
+/* */
 public class JdbcConnectionFactory implements ConnectionFactory {
-
     private DataBaseType dataBaseType;
-
     private String jdbcUrl;
-
     private String userName;
-
     private String password;
 
     public JdbcConnectionFactory(DataBaseType dataBaseType, String jdbcUrl, String userName, String password) {

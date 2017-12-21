@@ -18,8 +18,7 @@ public class BytesColumn extends Column {
 	}
 
 	public BytesColumn(byte[] bytes) {
-		super(ArrayUtils.clone(bytes), Column.Type.BYTES, null == bytes ? 0
-				: bytes.length);
+		super(ArrayUtils.clone(bytes), Column.Type.BYTES, null == bytes ? 0 : bytes.length);
 	}
 
 	@Override

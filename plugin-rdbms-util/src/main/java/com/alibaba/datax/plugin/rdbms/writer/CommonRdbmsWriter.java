@@ -29,8 +29,7 @@ public class CommonRdbmsWriter {
     public static class Job {
         private DataBaseType dataBaseType;
 
-        private static final Logger LOG = LoggerFactory
-                .getLogger(Job.class);
+        private static final Logger LOG = LoggerFactory.getLogger(Job.class);
 
         public Job(DataBaseType dataBaseType) {
             this.dataBaseType = dataBaseType;
@@ -39,9 +38,7 @@ public class CommonRdbmsWriter {
 
         public void init(Configuration originalConfig) {
             OriginalConfPretreatmentUtil.doPretreatment(originalConfig, this.dataBaseType);
-
-            LOG.debug("After job init(), originalConfig now is:[\n{}\n]",
-                    originalConfig.toJSON());
+            LOG.debug("After job init(), originalConfig now is:[\n{}\n]", originalConfig.toJSON());
         }
 
         /*目前只支持MySQL Writer跟Oracle Writer;检查PreSQL跟PostSQL语法以及insert，delete权限*/
@@ -62,8 +59,7 @@ public class CommonRdbmsWriter {
             /*检查insert 跟delete权限*/
             String username = originalConfig.getString(Key.USERNAME);
             String password = originalConfig.getString(Key.PASSWORD);
-            List<Object> connections = originalConfig.getList(Constant.CONN_MARK,
-                    Object.class);
+            List<Object> connections = originalConfig.getList(Constant.CONN_MARK, Object.class);
 
             for (int i = 0, len = connections.size(); i < len; i++) {
                 Configuration connConf = Configuration.from(connections.get(i).toString());
@@ -91,10 +87,8 @@ public class CommonRdbmsWriter {
                 String username = originalConfig.getString(Key.USERNAME);
                 String password = originalConfig.getString(Key.PASSWORD);
 
-                List<Object> conns = originalConfig.getList(Constant.CONN_MARK,
-                        Object.class);
-                Configuration connConf = Configuration.from(conns.get(0)
-                        .toString());
+                List<Object> conns = originalConfig.getList(Constant.CONN_MARK, Object.class);
+                Configuration connConf = Configuration.from(conns.get(0) .toString());
 
                 // 这里的 jdbcUrl 已经 append 了合适后缀参数
                 String jdbcUrl = connConf.getString(Key.JDBC_URL);
@@ -103,32 +97,25 @@ public class CommonRdbmsWriter {
                 String table = connConf.getList(Key.TABLE, String.class).get(0);
                 originalConfig.set(Key.TABLE, table);
 
-                List<String> preSqls = originalConfig.getList(Key.PRE_SQL,
-                        String.class);
-                List<String> renderedPreSqls = WriterUtil.renderPreOrPostSqls(
-                        preSqls, table);
+                List<String> preSqls = originalConfig.getList(Key.PRE_SQL, String.class);
+                List<String> renderedPreSqls = WriterUtil.renderPreOrPostSqls(preSqls, table);
 
                 originalConfig.remove(Constant.CONN_MARK);
                 if (null != renderedPreSqls && !renderedPreSqls.isEmpty()) {
                     // 说明有 preSql 配置，则此处删除掉
                     originalConfig.remove(Key.PRE_SQL);
 
-                    Connection conn = DBUtil.getConnection(dataBaseType,
-                            jdbcUrl, username, password);
-                    LOG.info("Begin to execute preSqls:[{}]. context info:{}.",
-                            StringUtils.join(renderedPreSqls, ";"), jdbcUrl);
-
+                    Connection conn = DBUtil.getConnection(dataBaseType, jdbcUrl, username, password);
+                    LOG.info("Begin to execute preSqls:[{}]. context info:{}.", StringUtils.join(renderedPreSqls, ";"), jdbcUrl);
                     WriterUtil.executeSqls(conn, renderedPreSqls, jdbcUrl, dataBaseType);
                     DBUtil.closeDBResources(null, null, conn);
                 }
             }
 
-            LOG.debug("After job prepare(), originalConfig now is:[\n{}\n]",
-                    originalConfig.toJSON());
+            LOG.debug("After job prepare(), originalConfig now is:[\n{}\n]", originalConfig.toJSON());
         }
 
-        public List<Configuration> split(Configuration originalConfig,
-                                         int mandatoryNumber) {
+        public List<Configuration> split(Configuration originalConfig, int mandatoryNumber) {
             return WriterUtil.doSplit(originalConfig, mandatoryNumber);
         }
 
@@ -141,38 +128,26 @@ public class CommonRdbmsWriter {
 
                 // 已经由 prepare 进行了appendJDBCSuffix处理
                 String jdbcUrl = originalConfig.getString(Key.JDBC_URL);
-
                 String table = originalConfig.getString(Key.TABLE);
-
-                List<String> postSqls = originalConfig.getList(Key.POST_SQL,
-                        String.class);
-                List<String> renderedPostSqls = WriterUtil.renderPreOrPostSqls(
-                        postSqls, table);
+                List<String> postSqls = originalConfig.getList(Key.POST_SQL, String.class);
+                List<String> renderedPostSqls = WriterUtil.renderPreOrPostSqls( postSqls, table);
 
                 if (null != renderedPostSqls && !renderedPostSqls.isEmpty()) {
                     // 说明有 postSql 配置，则此处删除掉
                     originalConfig.remove(Key.POST_SQL);
-
-                    Connection conn = DBUtil.getConnection(this.dataBaseType,
-                            jdbcUrl, username, password);
-
-                    LOG.info(
-                            "Begin to execute postSqls:[{}]. context info:{}.",
-                            StringUtils.join(renderedPostSqls, ";"), jdbcUrl);
+                    Connection conn = DBUtil.getConnection(this.dataBaseType, jdbcUrl, username, password);
+                    LOG.info( "Begin to execute postSqls:[{}]. context info:{}.", StringUtils.join(renderedPostSqls, ";"), jdbcUrl);
                     WriterUtil.executeSqls(conn, renderedPostSqls, jdbcUrl, dataBaseType);
                     DBUtil.closeDBResources(null, null, conn);
                 }
             }
         }
 
-        public void destroy(Configuration originalConfig) {
-        }
-
+        public void destroy(Configuration originalConfig) { }
     }
 
     public static class Task {
-        protected static final Logger LOG = LoggerFactory
-                .getLogger(Task.class);
+        protected static final Logger LOG = LoggerFactory.getLogger(Task.class);
 
         protected DataBaseType dataBaseType;
         private static final String VALUE_HOLDER = "?";
@@ -191,10 +166,9 @@ public class CommonRdbmsWriter {
 
         // 作为日志显示信息时，需要附带的通用信息。比如信息所对应的数据库连接等信息，针对哪个表做的操作
         protected static String BASIC_MESSAGE;
-
         protected static String INSERT_OR_REPLACE_TEMPLATE;
 
-        protected String writeRecordSql;
+        protected String writeRecordSql;    // 写入sql语句
         protected String writeMode;
         protected boolean emptyAsNull;
         protected Triple<List<String>, List<Integer>, List<String>> resultSetMetaData;
@@ -212,9 +186,7 @@ public class CommonRdbmsWriter {
             if (this.jdbcUrl.startsWith(Constant.OB10_SPLIT_STRING) && this.dataBaseType == DataBaseType.MySql) {
                 String[] ss = this.jdbcUrl.split(Constant.OB10_SPLIT_STRING_PATTERN);
                 if (ss.length != 3) {
-                    throw DataXException
-                            .asDataXException(
-                                    DBUtilErrorCode.JDBC_OB10_ADDRESS_ERROR, "JDBC OB10格式错误，请联系askdatax");
+                    throw DataXException.asDataXException(DBUtilErrorCode.JDBC_OB10_ADDRESS_ERROR, "JDBC OB10格式错误，请联系askdatax");
                 }
                 LOG.info("this is ob1_0 jdbc url.");
                 this.username = ss[1].trim() + ":" + this.username;
@@ -237,8 +209,7 @@ public class CommonRdbmsWriter {
             INSERT_OR_REPLACE_TEMPLATE = writerSliceConfig.getString(Constant.INSERT_OR_REPLACE_TEMPLATE_MARK);
             this.writeRecordSql = String.format(INSERT_OR_REPLACE_TEMPLATE, this.table);
 
-            BASIC_MESSAGE = String.format("jdbcUrl:[%s], table:[%s]",
-                    this.jdbcUrl, this.table);
+            BASIC_MESSAGE = String.format("jdbcUrl:[%s], table:[%s]", this.jdbcUrl, this.table);
         }
 
         public void prepare(Configuration writerSliceConfig) {
@@ -263,8 +234,7 @@ public class CommonRdbmsWriter {
             this.taskPluginCollector = taskPluginCollector;
 
             // 用于写入数据的时候的类型根据目的表字段类型转换
-            this.resultSetMetaData = DBUtil.getColumnMetaData(connection,
-                    this.table, StringUtils.join(this.columns, ","));
+            this.resultSetMetaData = DBUtil.getColumnMetaData(connection, this.table, StringUtils.join(this.columns, ","));
             // 写数据库的SQL语句
             calcWriteRecordSql();
 
@@ -275,19 +245,14 @@ public class CommonRdbmsWriter {
                 while ((record = recordReceiver.getFromReader()) != null) {
                     if (record.getColumnNumber() != this.columnNumber) {
                         // 源头读取字段列数与目的表字段写入列数不相等，直接报错
-                        throw DataXException
-                                .asDataXException(
-                                        DBUtilErrorCode.CONF_ERROR,
-                                        String.format(
-                                                "列配置信息有错误. 因为您配置的任务中，源头读取字段数:%s 与 目的表要写入的字段数:%s 不相等. 请检查您的配置并作出修改.",
-                                                record.getColumnNumber(),
-                                                this.columnNumber));
+                        throw DataXException.asDataXException(DBUtilErrorCode.CONF_ERROR, String.format("列配置信息有错误. 因为您配置的任务中，源头读取字段数:%s 与 目的表要写入的字段数:%s 不相等. 请检查您的配置并作出修改.", record.getColumnNumber(), this.columnNumber));
                     }
 
                     writeBuffer.add(record);
                     bufferBytes += record.getMemorySize();
 
                     if (writeBuffer.size() >= batchSize || bufferBytes >= batchByteSize) {
+                        // 执行写入
                         doBatchInsert(connection, writeBuffer);
                         writeBuffer.clear();
                         bufferBytes = 0;
@@ -299,8 +264,7 @@ public class CommonRdbmsWriter {
                     bufferBytes = 0;
                 }
             } catch (Exception e) {
-                throw DataXException.asDataXException(
-                        DBUtilErrorCode.WRITE_DATA_ERROR, e);
+                throw DataXException.asDataXException(DBUtilErrorCode.WRITE_DATA_ERROR, e);
             } finally {
                 writeBuffer.clear();
                 bufferBytes = 0;
@@ -308,50 +272,40 @@ public class CommonRdbmsWriter {
             }
         }
 
-        // TODO 改用连接池，确保每次获取的连接都是可用的（注意：连接可能需要每次都初始化其 session）
-        public void startWrite(RecordReceiver recordReceiver,
-                               Configuration writerSliceConfig,
-                               TaskPluginCollector taskPluginCollector) {
-            Connection connection = DBUtil.getConnection(this.dataBaseType,
-                    this.jdbcUrl, username, password);
-            DBUtil.dealWithSessionConfig(connection, writerSliceConfig,
-                    this.dataBaseType, BASIC_MESSAGE);
+        // 先获得connection
+        public void startWrite(RecordReceiver recordReceiver, Configuration writerSliceConfig, TaskPluginCollector taskPluginCollector) {
+            Connection connection = DBUtil.getConnection(this.dataBaseType, this.jdbcUrl, username, password);
+            DBUtil.dealWithSessionConfig(connection, writerSliceConfig, this.dataBaseType, BASIC_MESSAGE);
             startWriteWithConnection(recordReceiver, taskPluginCollector, connection);
         }
 
-
+        // 结束的时候调用
         public void post(Configuration writerSliceConfig) {
-            int tableNumber = writerSliceConfig.getInt(
-                    Constant.TABLE_NUMBER_MARK);
+            int tableNumber = writerSliceConfig.getInt(Constant.TABLE_NUMBER_MARK);
 
             boolean hasPostSql = (this.postSqls != null && this.postSqls.size() > 0);
             if (tableNumber == 1 || !hasPostSql) {
                 return;
             }
 
-            Connection connection = DBUtil.getConnection(this.dataBaseType,
-                    this.jdbcUrl, username, password);
+            Connection connection = DBUtil.getConnection(this.dataBaseType, this.jdbcUrl, username, password);
 
-            LOG.info("Begin to execute postSqls:[{}]. context info:{}.",
-                    StringUtils.join(this.postSqls, ";"), BASIC_MESSAGE);
+            LOG.info("Begin to execute postSqls:[{}]. context info:{}.", StringUtils.join(this.postSqls, ";"), BASIC_MESSAGE);
             WriterUtil.executeSqls(connection, this.postSqls, BASIC_MESSAGE, dataBaseType);
             DBUtil.closeDBResources(null, null, connection);
         }
 
-        public void destroy(Configuration writerSliceConfig) {
-        }
+        public void destroy(Configuration writerSliceConfig) { }
 
-        protected void doBatchInsert(Connection connection, List<Record> buffer)
-                throws SQLException {
+        // 批量写入数据，用事务的方式
+        protected void doBatchInsert(Connection connection, List<Record> buffer) throws SQLException {
             PreparedStatement preparedStatement = null;
             try {
                 connection.setAutoCommit(false);
-                preparedStatement = connection
-                        .prepareStatement(this.writeRecordSql);
+                preparedStatement = connection.prepareStatement(this.writeRecordSql);
 
                 for (Record record : buffer) {
-                    preparedStatement = fillPreparedStatement(
-                            preparedStatement, record);
+                    preparedStatement = fillPreparedStatement(preparedStatement, record);
                     preparedStatement.addBatch();
                 }
                 preparedStatement.executeBatch();
@@ -361,28 +315,25 @@ public class CommonRdbmsWriter {
                 connection.rollback();
                 doOneInsert(connection, buffer);
             } catch (Exception e) {
-                throw DataXException.asDataXException(
-                        DBUtilErrorCode.WRITE_DATA_ERROR, e);
+                throw DataXException.asDataXException(DBUtilErrorCode.WRITE_DATA_ERROR, e);
             } finally {
                 DBUtil.closeDBResources(preparedStatement, null);
             }
         }
 
+        // 逐条写入数据
         protected void doOneInsert(Connection connection, List<Record> buffer) {
             PreparedStatement preparedStatement = null;
             try {
                 connection.setAutoCommit(true);
-                preparedStatement = connection
-                        .prepareStatement(this.writeRecordSql);
+                preparedStatement = connection.prepareStatement(this.writeRecordSql);
 
                 for (Record record : buffer) {
                     try {
-                        preparedStatement = fillPreparedStatement(
-                                preparedStatement, record);
+                        preparedStatement = fillPreparedStatement(preparedStatement, record);
                         preparedStatement.execute();
                     } catch (SQLException e) {
                         LOG.debug(e.toString());
-
                         this.taskPluginCollector.collectDirtyRecord(record, e);
                     } finally {
                         // 最后不要忘了关闭 preparedStatement
@@ -390,16 +341,14 @@ public class CommonRdbmsWriter {
                     }
                 }
             } catch (Exception e) {
-                throw DataXException.asDataXException(
-                        DBUtilErrorCode.WRITE_DATA_ERROR, e);
+                throw DataXException.asDataXException(DBUtilErrorCode.WRITE_DATA_ERROR, e);
             } finally {
                 DBUtil.closeDBResources(preparedStatement, null);
             }
         }
 
         // 直接使用了两个类变量：columnNumber,resultSetMetaData
-        protected PreparedStatement fillPreparedStatement(PreparedStatement preparedStatement, Record record)
-                throws SQLException {
+        protected PreparedStatement fillPreparedStatement(PreparedStatement preparedStatement, Record record) throws SQLException {
             for (int i = 0; i < this.columnNumber; i++) {
                 int columnSqltype = this.resultSetMetaData.getMiddle().get(i);
                 preparedStatement = fillPreparedStatementColumnType(preparedStatement, i, columnSqltype, record.getColumn(i));
@@ -408,6 +357,7 @@ public class CommonRdbmsWriter {
             return preparedStatement;
         }
 
+        // 填充参数
         protected PreparedStatement fillPreparedStatementColumnType(PreparedStatement preparedStatement, int columnIndex, int columnSqltype, Column column) throws SQLException {
             java.util.Date utilDate;
             switch (columnSqltype) {
@@ -419,8 +369,7 @@ public class CommonRdbmsWriter {
                 case Types.LONGVARCHAR:
                 case Types.NVARCHAR:
                 case Types.LONGNVARCHAR:
-                    preparedStatement.setString(columnIndex + 1, column
-                            .asString());
+                    preparedStatement.setString(columnIndex + 1, column.asString());
                     break;
 
                 case Types.SMALLINT:
@@ -463,8 +412,7 @@ public class CommonRdbmsWriter {
                         try {
                             utilDate = column.asDate();
                         } catch (DataXException e) {
-                            throw new SQLException(String.format(
-                                    "Date 类型转换错误：[%s]", column));
+                            throw new SQLException(String.format("Date 类型转换错误：[%s]", column));
                         }
 
                         if (null != utilDate) {
@@ -479,8 +427,7 @@ public class CommonRdbmsWriter {
                     try {
                         utilDate = column.asDate();
                     } catch (DataXException e) {
-                        throw new SQLException(String.format(
-                                "TIME 类型转换错误：[%s]", column));
+                        throw new SQLException(String.format("TIME 类型转换错误：[%s]", column));
                     }
 
                     if (null != utilDate) {
@@ -494,8 +441,7 @@ public class CommonRdbmsWriter {
                     try {
                         utilDate = column.asDate();
                     } catch (DataXException e) {
-                        throw new SQLException(String.format(
-                                "TIMESTAMP 类型转换错误：[%s]", column));
+                        throw new SQLException(String.format("TIMESTAMP 类型转换错误：[%s]", column));
                     }
 
                     if (null != utilDate) {

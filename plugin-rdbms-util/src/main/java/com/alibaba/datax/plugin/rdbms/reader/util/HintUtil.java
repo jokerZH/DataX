@@ -21,8 +21,8 @@ public class HintUtil {
     private static DataBaseType dataBaseType;
     private static String username;
     private static String password;
-    private static Pattern tablePattern;
-    private static String hintExpression;
+    private static Pattern tablePattern;    /* 表名的模式 */
+    private static String hintExpression;   /* hint */
 
     public static void initHintConf(DataBaseType type, Configuration configuration){
         dataBaseType = type;
@@ -41,6 +41,7 @@ public class HintUtil {
         }
     }
 
+    // 就处理oracle的情况
     public static String buildQueryColumn(String jdbcUrl, String table, String column){
         try{
             if(tablePattern != null && DataBaseType.Oracle.equals(dataBaseType)) {

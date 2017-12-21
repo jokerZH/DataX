@@ -49,6 +49,7 @@ public final class CommunicationTool {
     public static final String TRANSFORMER_FILTER_RECORDS = "totalTransformerFilterRecords";
     public static final String TRANSFORMER_NAME_PREFIX = "usedTimeByTransformer_";
 
+    // 获得提交的communication, 计算一些统计数值
     public static Communication getReportCommunication(Communication now, Communication old, int totalStage) {
         Validate.isTrue(now != null && old != null,"为汇报准备的新旧metric不能为null");
 

@@ -14,27 +14,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ReaderSplitUtil {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(ReaderSplitUtil.class);
+    private static final Logger LOG = LoggerFactory .getLogger(ReaderSplitUtil.class);
 
-    public static List<Configuration> doSplit(
-            Configuration originalSliceConfig, int adviceNumber) {
+    // 确定切分成多个并行单元执行
+    public static List<Configuration> doSplit(Configuration originalSliceConfig, int adviceNumber) {
         boolean isTableMode = originalSliceConfig.getBool(Constant.IS_TABLE_MODE).booleanValue();
         int eachTableShouldSplittedNumber = -1;
         if (isTableMode) {
             // adviceNumber这里是channel数量大小, 即datax并发task数量
             // eachTableShouldSplittedNumber是单表应该切分的份数, 向上取整可能和adviceNumber没有比例关系了已经
-            eachTableShouldSplittedNumber = calculateEachTableShouldSplittedNumber(
-                    adviceNumber, originalSliceConfig.getInt(Constant.TABLE_NUMBER_MARK));
+            eachTableShouldSplittedNumber = calculateEachTableShouldSplittedNumber(adviceNumber, originalSliceConfig.getInt(Constant.TABLE_NUMBER_MARK));
         }
 
         String column = originalSliceConfig.getString(Key.COLUMN);
         String where = originalSliceConfig.getString(Key.WHERE, null);
-
         List<Object> conns = originalSliceConfig.getList(Constant.CONN_MARK, Object.class);
 
         List<Configuration> splittedConfigs = new ArrayList<Configuration>();
-
         for (int i = 0, len = conns.size(); i < len; i++) {
             Configuration sliceConfig = originalSliceConfig.clone();
 
@@ -44,23 +40,18 @@ public final class ReaderSplitUtil {
 
             // 抽取 jdbcUrl 中的 ip/port 进行资源使用的打标，以提供给 core 做有意义的 shuffle 操作
             sliceConfig.set(CommonConstant.LOAD_BALANCE_RESOURCE_MARK, DataBaseType.parseIpFromJdbcUrl(jdbcUrl));
-
             sliceConfig.remove(Constant.CONN_MARK);
 
             Configuration tempSlice;
-
             // 说明是配置的 table 方式
             if (isTableMode) {
                 // 已在之前进行了扩展和`处理，可以直接使用
                 List<String> tables = connConf.getList(Key.TABLE, String.class);
-
                 Validate.isTrue(null != tables && !tables.isEmpty(), "您读取数据库表配置错误.");
 
                 String splitPk = originalSliceConfig.getString(Key.SPLIT_PK, null);
-
                 //最终切分份数不一定等于 eachTableShouldSplittedNumber
-                boolean needSplitTable = eachTableShouldSplittedNumber > 1
-                        && StringUtils.isNotBlank(splitPk);
+                boolean needSplitTable = eachTableShouldSplittedNumber > 1 && StringUtils.isNotBlank(splitPk);
                 if (needSplitTable) {
                     if (tables.size() == 1) {
                         //原来:如果是单表的，主键切分num=num*2+1
@@ -75,9 +66,7 @@ public final class ReaderSplitUtil {
                         tempSlice = sliceConfig.clone();
                         tempSlice.set(Key.TABLE, table);
 
-                        List<Configuration> splittedSlices = SingleTableSplitUtil
-                                .splitSingleTable(tempSlice, eachTableShouldSplittedNumber);
-
+                        List<Configuration> splittedSlices = SingleTableSplitUtil.splitSingleTable(tempSlice, eachTableShouldSplittedNumber);
                         splittedConfigs.addAll(splittedSlices);
                     }
                 } else {
@@ -106,6 +95,7 @@ public final class ReaderSplitUtil {
         return splittedConfigs;
     }
 
+    // TODO
     public static Configuration doPreCheckSplit(Configuration originalSliceConfig) {
         Configuration queryConfig = originalSliceConfig.clone();
         boolean isTableMode = originalSliceConfig.getBool(Constant.IS_TABLE_MODE).booleanValue();
@@ -139,8 +129,7 @@ public final class ReaderSplitUtil {
                 queryConfig.set(connPath,connConf);
             } else {
                 // 说明是配置的 querySql 方式
-                List<String> sqls = connConf.getList(Key.QUERY_SQL,
-                        String.class);
+                List<String> sqls = connConf.getList(Key.QUERY_SQL, String.class);
                 for (String querySql : sqls) {
                     querys.add(querySql);
                 }
@@ -151,11 +140,8 @@ public final class ReaderSplitUtil {
         return queryConfig;
     }
 
-    private static int calculateEachTableShouldSplittedNumber(int adviceNumber,
-                                                              int tableNumber) {
+    private static int calculateEachTableShouldSplittedNumber(int adviceNumber, int tableNumber) {
         double tempNum = 1.0 * adviceNumber / tableNumber;
-
         return (int) Math.ceil(tempNum);
     }
-
 }

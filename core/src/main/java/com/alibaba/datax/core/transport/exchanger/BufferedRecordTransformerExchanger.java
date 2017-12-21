@@ -20,23 +20,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BufferedRecordTransformerExchanger extends TransformerExchanger implements RecordSender, RecordReceiver {
-
     private final Channel channel;
-
     private final Configuration configuration;
-
     private final List<Record> buffer;
-
     private int bufferSize;
-
     protected final int byteCapacity;
-
     private final AtomicInteger memoryBytes = new AtomicInteger(0);
-
     private int bufferIndex = 0;
-
     private static Class<? extends Record> RECORD_CLASS;
-
     private volatile boolean shutdown = false;
 
 
@@ -52,22 +43,17 @@ public class BufferedRecordTransformerExchanger extends TransformerExchanger imp
         this.channel = channel;
         this.configuration = channel.getConfiguration();
 
-        this.bufferSize = configuration
-                .getInt(CoreConstant.DATAX_CORE_TRANSPORT_EXCHANGER_BUFFERSIZE);
+        this.bufferSize = configuration.getInt(CoreConstant.DATAX_CORE_TRANSPORT_EXCHANGER_BUFFERSIZE);
         this.buffer = new ArrayList<Record>(bufferSize);
 
         //channel的queue默认大小为8M，原来为64M
-        this.byteCapacity = configuration.getInt(
-                CoreConstant.DATAX_CORE_TRANSPORT_CHANNEL_CAPACITY_BYTE, 8 * 1024 * 1024);
+        this.byteCapacity = configuration.getInt(CoreConstant.DATAX_CORE_TRANSPORT_CHANNEL_CAPACITY_BYTE, 8 * 1024 * 1024);
 
         try {
-            BufferedRecordTransformerExchanger.RECORD_CLASS = ((Class<? extends Record>) Class
-                    .forName(configuration.getString(
-                            CoreConstant.DATAX_CORE_TRANSPORT_RECORD_CLASS,
-                            "com.alibaba.datax.core.transport.record.DefaultRecord")));
+            BufferedRecordTransformerExchanger.RECORD_CLASS = ((Class<? extends Record>) Class.forName(configuration.getString(
+                            CoreConstant.DATAX_CORE_TRANSPORT_RECORD_CLASS,"com.alibaba.datax.core.transport.record.DefaultRecord")));
         } catch (Exception e) {
-            throw DataXException.asDataXException(
-                    FrameworkErrorCode.CONFIG_ERROR, e);
+            throw DataXException.asDataXException(FrameworkErrorCode.CONFIG_ERROR, e);
         }
     }
 
@@ -76,8 +62,7 @@ public class BufferedRecordTransformerExchanger extends TransformerExchanger imp
         try {
             return BufferedRecordTransformerExchanger.RECORD_CLASS.newInstance();
         } catch (Exception e) {
-            throw DataXException.asDataXException(
-                    FrameworkErrorCode.CONFIG_ERROR, e);
+            throw DataXException.asDataXException(FrameworkErrorCode.CONFIG_ERROR, e);
         }
     }
 
@@ -90,7 +75,6 @@ public class BufferedRecordTransformerExchanger extends TransformerExchanger imp
         Validate.notNull(record, "record不能为空.");
 
         record = doTransformer(record);
-
         if(record == null){
             return;
         }

@@ -111,13 +111,8 @@ public class PerfRecord implements Comparable<PerfRecord> {
         }
     }
 
-    public void addCount(long count) {
-        this.count += count;
-    }
-
-    public void addSize(long size) {
-        this.size += size;
-    }
+    public void addCount(long count) { this.count += count; }
+    public void addSize(long size) { this.size += size; }
 
     public void end() {
         if(PerfTrace.getInstance().isEnable()) {
@@ -189,58 +184,19 @@ public class PerfRecord implements Comparable<PerfRecord> {
         copy.size = this.size;
         return copy;
     }
-    public int getTaskGroupId() {
-        return taskGroupId;
-    }
-
-    public int getTaskId() {
-        return taskId;
-    }
-
-    public PHASE getPhase() {
-        return phase;
-    }
-
-    public ACTION getAction() {
-        return action;
-    }
-
-    public long getElapsedTimeInNs() {
-        return elapsedTimeInNs;
-    }
-
-    public long getCount() {
-        return count;
-    }
-
-    public long getSize() {
-        return size;
-    }
-
-    public long getInstId(){
-        return PerfTrace.getInstance().getInstId();
-    }
-
-    public String getHostIP(){
-       return HostUtils.IP;
-    }
-
-    public String getHostName(){
-        return HostUtils.HOSTNAME;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public long getStartTimeInMs() {
-        return startTime.getTime();
-    }
-
-    public long getStartTimeInNs() {
-        return startTimeInNs;
-    }
-
+    public int getTaskGroupId() { return taskGroupId; }
+    public int getTaskId() { return taskId; }
+    public PHASE getPhase() { return phase; }
+    public ACTION getAction() { return action; }
+    public long getElapsedTimeInNs() { return elapsedTimeInNs; }
+    public long getCount() { return count; }
+    public long getSize() { return size; }
+    public long getInstId(){ return PerfTrace.getInstance().getInstId(); }
+    public String getHostIP(){ return HostUtils.IP; }
+    public String getHostName(){ return HostUtils.HOSTNAME; }
+    public Date getStartTime() { return startTime; }
+    public long getStartTimeInMs() { return startTime.getTime(); }
+    public long getStartTimeInNs() { return startTimeInNs; }
     public String getDatetime(){
         if(startTime == null){
             return "null time";
@@ -248,11 +204,6 @@ public class PerfRecord implements Comparable<PerfRecord> {
         return DateFormatUtils.format(startTime, datetimeFormat);
     }
 
-    public boolean isReport() {
-        return isReport;
-    }
-
-    public void setIsReport(boolean isReport) {
-        this.isReport = isReport;
-    }
+    public boolean isReport() { return isReport; }
+    public void setIsReport(boolean isReport) { this.isReport = isReport; }
 }

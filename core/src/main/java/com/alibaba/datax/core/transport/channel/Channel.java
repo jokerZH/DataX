@@ -12,37 +12,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
-/**
- * Created by jingxing on 14-8-25.
- * 统计和限速都在这里
- */
+/* 统计和限速都在这里, 上面在重置，整个就是倒下手，并控制速度 */
 public abstract class Channel {
     private static final Logger LOG = LoggerFactory.getLogger(Channel.class);
 
     protected int taskGroupId;
-
     protected int capacity;
-
     protected int byteCapacity;
-
     protected long byteSpeed; // bps: bytes/s
-
     protected long recordSpeed; // tps: records/s
-
     protected long flowControlInterval;
-
     protected volatile boolean isClosed = false;
-
     protected Configuration configuration = null;
-
     protected volatile long waitReaderTime = 0;
-
     protected volatile long waitWriterTime = 0;
-
     private static Boolean isFirstPrint = true;
-
     private Communication currentCommunication;
-
     private Communication lastCommunication = new Communication();
 
     public Channel(final Configuration configuration) {
@@ -73,34 +58,13 @@ public abstract class Channel {
         this.configuration = configuration;
     }
 
-    public void close() {
-        this.isClosed = true;
-    }
-
-    public void open() {
-        this.isClosed = false;
-    }
-
-    public boolean isClosed() {
-        return isClosed;
-    }
-
-    public int getTaskGroupId() {
-        return this.taskGroupId;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public long getByteSpeed() {
-        return byteSpeed;
-    }
-
-    public Configuration getConfiguration() {
-        return this.configuration;
-    }
-
+    public void close() { this.isClosed = true; }
+    public void open() { this.isClosed = false; }
+    public boolean isClosed() { return isClosed; }
+    public int getTaskGroupId() { return this.taskGroupId; }
+    public int getCapacity() { return capacity; }
+    public long getByteSpeed() { return byteSpeed; }
+    public Configuration getConfiguration() { return this.configuration; }
     public void setCommunication(final Communication communication) {
         this.currentCommunication = communication;
         this.lastCommunication.reset();
@@ -137,17 +101,11 @@ public abstract class Channel {
     }
 
     protected abstract void doPush(Record r);
-
     protected abstract void doPushAll(Collection<Record> rs);
-
     protected abstract Record doPull();
-
     protected abstract void doPullAll(Collection<Record> rs);
-
     public abstract int size();
-
     public abstract boolean isEmpty();
-
     public abstract void clear();
 
     private long getByteSize(final Collection<Record> rs) {
@@ -158,6 +116,7 @@ public abstract class Channel {
         return size;
     }
 
+    // 读 并限流
     private void statPush(long recordSize, long byteSize) {
         currentCommunication.increaseCounter(CommunicationTool.READ_SUCCEED_RECORDS, recordSize);
         currentCommunication.increaseCounter(CommunicationTool.READ_SUCCEED_BYTES, byteSize);
@@ -212,6 +171,7 @@ public abstract class Channel {
         }
     }
 
+    // 写
     private void statPull(long recordSize, long byteSize) {
         currentCommunication.increaseCounter(CommunicationTool.WRITE_RECEIVED_RECORDS, recordSize);
         currentCommunication.increaseCounter(CommunicationTool.WRITE_RECEIVED_BYTES, byteSize);
